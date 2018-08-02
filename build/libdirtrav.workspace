@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_workspace_file>
+	<Workspace title="Workspace">
+		<Project filename="libdirtrav_static.cbp" />
+		<Project filename="libdirtrav_shared.cbp" />
+		<Project filename="libdirtravw_static.cbp" />
+		<Project filename="libdirtravw_shared.cbp" />
+		<Project filename="libdirtrav_nowin_static.cbp" />
+		<Project filename="libdirtrav_nowin_shared.cbp" />
+		<Project filename="libdirtravw_nowin_static.cbp" />
+		<Project filename="libdirtravw_nowin_shared.cbp" />
+		<Project filename="test1.cbp">
+			<Depends filename="libdirtrav_static.cbp" />
+		</Project>
+		<Project filename="test2.cbp">
+			<Depends filename="libdirtrav_shared.cbp" />
+			<Depends filename="libdirtravw_shared.cbp" />
+		</Project>
+		<Project filename="tree.cbp">
+			<Depends filename="libdirtrav_static.cbp" />
+		</Project>
+		<Project filename="treew.cbp">
+			<Depends filename="libdirtravw_static.cbp" />
+		</Project>
+		<Project filename="rdir.cbp">
+			<Depends filename="libdirtrav_static.cbp" />
+		</Project>
+		<Project filename="rdirw.cbp">
+			<Depends filename="libdirtravw_static.cbp" />
+		</Project>
+	</Workspace>
+</CodeBlocks_workspace_file>
