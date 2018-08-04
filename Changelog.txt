@@ -3,6 +3,7 @@
 2018-08-04  Brecht Sanders  https://github.com/brechtsanders/
 
   * fixed issue not calling foldercallbackafter when foldercallbackbefore returns negative value
+  * added tool: folderstats
 
 0.1.0
 
