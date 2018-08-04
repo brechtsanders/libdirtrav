@@ -28,5 +28,8 @@
 		<Project filename="rdirw.cbp">
 			<Depends filename="libdirtravw_static.cbp" />
 		</Project>
+		<Project filename="folderstats.cbp">
+			<Depends filename="libdirtravw_static.cbp" />
+		</Project>
 	</Workspace>
 </CodeBlocks_workspace_file>

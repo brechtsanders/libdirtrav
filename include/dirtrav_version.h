@@ -45,7 +45,7 @@ THE SOFTWARE.
 /*! \brief major version number */
 #define DIRTRAV_VERSION_MAJOR 0
 /*! \brief minor version number */
-#define DIRTRAV_VERSION_MINOR 1
+#define DIRTRAV_VERSION_MINOR 2
 /*! \brief micro version number */
 #define DIRTRAV_VERSION_MICRO 0
 /*! @} */

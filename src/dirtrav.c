@@ -213,7 +213,7 @@ int DIRTRAVFN(iteration) (struct DIRTRAVFN(entry_internal_struct)* parentfolderi
           else if (statusbefore > 0)
             status = statusbefore;
           //call callback after processing folder
-          if (foldercallbackafter && statusbefore == 0)
+          if (foldercallbackafter && statusbefore <= 0)
             status = (*foldercallbackafter)((DIRTRAVFN(entry))&info);
         }
       } else {
@@ -267,7 +267,7 @@ int DIRTRAVFN(iteration) (struct DIRTRAVFN(entry_internal_struct)* parentfolderi
             else if (statusbefore > 0)
               status = statusbefore;
             //call callback after processing folder
-            if (foldercallbackafter && statusbefore == 0)
+            if (foldercallbackafter && statusbefore <= 0)
               status = (*foldercallbackafter)((DIRTRAVFN(entry))&info);
           }
         } else {
