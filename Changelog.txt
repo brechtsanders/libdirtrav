@@ -2,7 +2,7 @@
 
 2018-08-05  Brecht Sanders  https://github.com/brechtsanders/
 
-  * added -e option to folderstats
+  * added -e option to folderstats (to run with elevated privileges)
 
 0.2.2
 
