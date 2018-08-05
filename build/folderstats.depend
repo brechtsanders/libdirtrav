@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1533411073 source:z:\libdirtrav\src\folderstats.c
+1533459686 source:z:\libdirtrav\src\folderstats.c
 	<stdio.h>
 	<stdlib.h>
 	<stdint.h>

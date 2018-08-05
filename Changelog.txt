@@ -1,3 +1,9 @@
+0.2.1
+
+2018-08-05  Brecht Sanders  https://github.com/brechtsanders/
+
+  * dirtrav_traverse_directory() now returns -1 instead of 0 when path is not found
+
 0.2.0
 
 2018-08-04  Brecht Sanders  https://github.com/brechtsanders/

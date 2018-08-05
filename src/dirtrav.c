@@ -225,10 +225,8 @@ int DIRTRAVFN(iteration) (struct DIRTRAVFN(entry_internal_struct)* parentfolderi
     } while (status == 0 && DIRWINFN(FindNextFile)(dir, &info.direntry));
     FindClose(dir);
     free(fullpath);
-/*
   } else {
     status = -1;
-*/
   }
   free(searchpath);
 #else
@@ -282,6 +280,8 @@ int DIRTRAVFN(iteration) (struct DIRTRAVFN(entry_internal_struct)* parentfolderi
       free(fullpath);
     }
     DIR_WFN(closedir)(dir);
+  } else {
+    status = -1;
   }
 #endif
   return status;
