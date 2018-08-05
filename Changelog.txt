@@ -1,3 +1,9 @@
+0.2.2
+
+2018-08-05  Brecht Sanders  https://github.com/brechtsanders/
+
+  * fixed issue with dirtrav_prop_get_size() for sizes > 4GB on Windows
+
 0.2.1
 
 2018-08-05  Brecht Sanders  https://github.com/brechtsanders/

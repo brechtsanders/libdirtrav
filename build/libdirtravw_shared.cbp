@@ -88,6 +88,7 @@
 			<Add option="-DBUILD_DIRTRAV_DLL" />
 			<Add directory="../include" />
 		</Compiler>
+		<Unit filename="../include/dirtrav_version.h" />
 		<Unit filename="../include/dirtravw.h" />
 		<Unit filename="../src/dirtrav.c">
 			<Option compilerVar="CC" />

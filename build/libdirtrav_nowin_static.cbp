@@ -106,6 +106,7 @@
 			<Add option="-static" />
 		</Linker>
 		<Unit filename="../include/dirtrav.h" />
+		<Unit filename="../include/dirtrav_version.h" />
 		<Unit filename="../src/dirtrav.c">
 			<Option compilerVar="CC" />
 		</Unit>

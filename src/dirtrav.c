@@ -468,7 +468,7 @@ DLL_EXPORT_DIRTRAV int DIRTRAVFN(prop_is_link) (DIRTRAVFN(entry) entry)
 DLL_EXPORT_DIRTRAV uint64_t DIRTRAVFN(prop_get_size) (DIRTRAVFN(entry) entry)
 {
 #if defined(_WIN32) && !defined(FORCE_OPENDIR)
-  return (uint64_t)0x10000 * ((struct DIRTRAVFN(entry_internal_struct)*)entry)->direntry.nFileSizeHigh + ((struct DIRTRAVFN(entry_internal_struct)*)entry)->direntry.nFileSizeLow;
+  return (uint64_t)0x100000000 * ((struct DIRTRAVFN(entry_internal_struct)*)entry)->direntry.nFileSizeHigh + ((struct DIRTRAVFN(entry_internal_struct)*)entry)->direntry.nFileSizeLow;
 #else
   return ((struct DIRTRAVFN(entry_internal_struct)*)entry)->statbuf.st_size;
 #endif

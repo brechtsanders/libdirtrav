@@ -65,7 +65,7 @@
 				<Option object_output="obj/Debug64/" />
 				<Option type="1" />
 				<Option compiler="MINGW64" />
-				<Option parameters="-r C:\ D:\ E:\" />
+				<Option parameters="-r C: D:" />
 				<Compiler>
 					<Add option="-g" />
 				</Compiler>
@@ -78,7 +78,7 @@
 				<Option object_output="obj/Release64/" />
 				<Option type="1" />
 				<Option compiler="MINGW64" />
-				<Option parameters="-r C:\" />
+				<Option parameters="-r D:\Download D:\PortableApps D:\PortableApps64 D:\Virtualization" />
 				<Compiler>
 					<Add option="-O2" />
 				</Compiler>
