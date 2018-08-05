@@ -139,8 +139,7 @@ DLL_EXPORT_DIRTRAV const DIRCHAR* DIRTRAVFN(elevate_access) ()
   }
   return result;
 #else
-  //return DIRTEXT("Privilege elevation not implemented on this platform");
-  return NULL;
+  return DIRTEXT("Privilege elevation not implemented on this platform");
 #endif
 }
 

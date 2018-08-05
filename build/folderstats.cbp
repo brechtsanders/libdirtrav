@@ -65,7 +65,7 @@
 				<Option object_output="obj/Debug64/" />
 				<Option type="1" />
 				<Option compiler="MINGW64" />
-				<Option parameters="-r C: D:" />
+				<Option parameters="-e -r C: D:" />
 				<Compiler>
 					<Add option="-g" />
 				</Compiler>

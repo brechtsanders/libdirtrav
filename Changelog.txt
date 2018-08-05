@@ -1,3 +1,9 @@
+0.2.3
+
+2018-08-05  Brecht Sanders  https://github.com/brechtsanders/
+
+  * added -e option to folderstats
+
 0.2.2
 
 2018-08-05  Brecht Sanders  https://github.com/brechtsanders/
