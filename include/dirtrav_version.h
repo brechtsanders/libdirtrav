@@ -1,5 +1,5 @@
 /*****************************************************************************
-Copyright (C)  2016  Brecht Sanders  All Rights Reserved
+Copyright (C)  2018  Brecht Sanders  All Rights Reserved
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 /**
  * @file dirtrav_version.h
- * @brief XLSX I/O header file with version information.
+ * @brief libdirtrav header file with version information.
  * @author Brecht Sanders
  *
  * Only use this header file when version information is needed at compile

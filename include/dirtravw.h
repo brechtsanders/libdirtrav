@@ -1,3 +1,35 @@
+/*****************************************************************************
+Copyright (C)  2018  Brecht Sanders  All Rights Reserved
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+*****************************************************************************/
+
+/**
+ * @file dirtravw.h
+ * @brief libdirtrav header file with main functions
+ * @author Brecht Sanders
+ *
+ * This header file defines the functions needed to traverse directories
+ * using Unicode UTF-16 wide strings (wchar_t*).
+ * \sa     dirtravw_traverse_directory()
+ */
+
 #ifndef INCLUDED_TRAVERSEDIRECTORY_H
 #define INCLUDED_TRAVERSEDIRECTORY_H
 
@@ -42,9 +74,6 @@ DLL_EXPORT_DIRTRAV const wchar_t* dirtravw_get_version_string ();
 DLL_EXPORT_DIRTRAV const wchar_t* dirtravw_elevate_access ();
 
 /*! \brief structure used to pass directory entry data to callback functions
- * \sa     dirtravw_file_callback_fn
- * \sa     dirtravw_folder_callback_fn
- * \sa     dirtravw_traverse_directory
 */
 struct dirtravw_entry_struct {
   const wchar_t* filename;                        /**< name of the current file or folder                    */
@@ -54,12 +83,19 @@ struct dirtravw_entry_struct {
   void* callbackdata;                             /**< callback data to be used freely by callback functions */
   void* folderlocaldata;                          /**< custom folder data, defaults to NULL, allocate/free in foldercallbackbefore/foldercallbackafter */
 };
+/*! \brief pointer to struct dirtravw_entry_struct used to pass data to callback functions
+ * \sa     struct dirtravw_entry_struct
+ * \sa     dirtravw_file_callback_fn
+ * \sa     dirtravw_folder_callback_fn
+ * \sa     dirtravw_traverse_directory()
+ */
 typedef struct dirtravw_entry_struct* dirtravw_entry;
 
 /*! \brief callback function called by dirtravw_traverse_directory for each file
  * \param  info                  file information
  * \return 0 to continue processing or non-zero to abort
  * \sa     dirtravw_entry
+ * \sa     dirtravw_traverse_directory()
  */
 typedef int (*dirtravw_file_callback_fn) (dirtravw_entry info);
 
@@ -67,17 +103,18 @@ typedef int (*dirtravw_file_callback_fn) (dirtravw_entry info);
  * \param  info                  folder information
  * \return 0 to continue processing or non-zero to abort, < 0 in foldercallbackbefore to not process subfolder
  * \sa     dirtravw_entry
+ * \sa     dirtravw_traverse_directory()
  */
 typedef int (*dirtravw_folder_callback_fn) (dirtravw_entry info);
 
 /*! \brief recursively traverse \p directory calling calbacks for each file and folder
  * \param  directory             full path of directory to be traversed
  * \param  filecallback          optional callback function to be called before processing each file
- * \param  filecallbackdata      optional callback data to be passed to file callback function
  * \param  foldercallbackbefore  optional callback function to be called before processing each folder
  * \param  foldercallbackafter   optional callback function to be called after processing each folder (except when foldercallbackbefore returned non-zero)
- * \param  foldercallbackdata    optional callback data to be passed to folder callback function
+ * \param  callbackdata          optional callback data to be passed to callback functions
  * \return 0 if the entire tree was traversed or the result of the callback function that caused traversal to stop
+ * \sa     dirtravw_entry
  */
 DLL_EXPORT_DIRTRAV int dirtravw_traverse_directory (const wchar_t* directory, dirtravw_file_callback_fn filecallback, dirtravw_folder_callback_fn foldercallbackbefore, dirtravw_folder_callback_fn foldercallbackafter, void* callbackdata);
 
@@ -86,8 +123,10 @@ DLL_EXPORT_DIRTRAV int dirtravw_traverse_directory (const wchar_t* directory, di
  * \param  path                  path to analyse
  * \param  foldercallbackbefore  optional callback function to be called before processing each folder
  * \param  foldercallbackafter   optional callback function to be called after processing each folder (except when foldercallbackbefore returned non-zero)
- * \param  foldercallbackdata    optional callback data to be passed to folder callback function
+ * \param  callbackdata          optional callback data to be passed to callback functions
  * \return 0 if the entire tree was traversed or the result of the callback function that caused traversal to stop
+ * \sa     dirtravw_file_callback_fn
+ * \sa     dirtravw_folder_callback_fn
  */
 DLL_EXPORT_DIRTRAV int dirtravw_traverse_path_parts (const wchar_t* startpath, const wchar_t* path, dirtravw_folder_callback_fn foldercallbackbefore, dirtravw_folder_callback_fn foldercallbackafter, void* callbackdata);
 
@@ -96,6 +135,7 @@ DLL_EXPORT_DIRTRAV int dirtravw_traverse_path_parts (const wchar_t* startpath, c
  * \param  path                  path of folder structure to create under \p startpath
  * \param  mode                  file permission bits to use when creating folders (not used on Windows)
  * \return 0
+ * \sa     dirtravw_folder_callback_fn
  */
 DLL_EXPORT_DIRTRAV int dirtravw_make_full_path (const wchar_t* startpath, const wchar_t* path, mode_t mode);
 
@@ -108,48 +148,64 @@ DLL_EXPORT_DIRTRAV int dirtravw_make_full_path (const wchar_t* startpath, const 
 /*! \brief get parent path
  * \param  entry                 system properties of directory entry
  * \return parent path
+ * \sa     dirtravw_entry
+ * \sa     dirtravw_traverse_directory()
  */
 #define dirtravw_prop_get_parentpath(entry) (entry->parentpath)
 
 /*! \brief get name of current file or folder
  * \param  entry                 system properties of directory entry
  * \return name of current file or folder
+ * \sa     dirtravw_entry
+ * \sa     dirtravw_traverse_directory()
  */
 #define dirtravw_prop_get_name(entry) (entry->filename)
 
 /*! \brief determine if current file or folder is a folder
  * \param  entry                 system properties of directory entry
  * \return non-zero if current file or folder is a folder
+ * \sa     dirtravw_entry
+ * \sa     dirtravw_traverse_directory()
  */
 DLL_EXPORT_DIRTRAV int dirtravw_prop_is_directory (dirtravw_entry entry);
 
 /*! \brief determine if current file or folder is a link
  * \param  entry                 system properties of directory entry
  * \return non-zero if current file or folder is a link
+ * \sa     dirtravw_entry
+ * \sa     dirtravw_traverse_directory()
  */
 DLL_EXPORT_DIRTRAV int dirtravw_prop_is_link (dirtravw_entry entry);
 
 /*! \brief get size of current file (not valid for folders)
  * \param  entry                 system properties of directory entry
  * \return file size in bytes
+ * \sa     dirtravw_entry
+ * \sa     dirtravw_traverse_directory()
  */
 DLL_EXPORT_DIRTRAV uint64_t dirtravw_prop_get_size (dirtravw_entry entry);
 
 /*! \brief get creation date and time of current file or folder
  * \param  entry                 system properties of directory entry
  * \return creation date and time of current file or folder
+ * \sa     dirtravw_entry
+ * \sa     dirtravw_traverse_directory()
  */
 DLL_EXPORT_DIRTRAV time_t dirtravw_prop_get_create_time (dirtravw_entry entry);
 
 /*! \brief get modification date and time of current file or folder
  * \param  entry                 system properties of directory entry
  * \return modification date and time of current file or folder
+ * \sa     dirtravw_entry
+ * \sa     dirtravw_traverse_directory()
  */
 DLL_EXPORT_DIRTRAV time_t dirtravw_prop_get_modify_time (dirtravw_entry entry);
 
 /*! \brief get last access date and time of current file or folder
  * \param  entry                 system properties of directory entry
  * \return last access date and time of current file or folder
+ * \sa     dirtravw_entry
+ * \sa     dirtravw_traverse_directory()
  */
 DLL_EXPORT_DIRTRAV time_t dirtravw_prop_get_access_time (dirtravw_entry entry);
 
