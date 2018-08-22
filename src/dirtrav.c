@@ -307,7 +307,7 @@ DLL_EXPORT_DIRTRAV int DIRTRAVFN(traverse_directory) (const DIRCHAR* directory, 
   info.external.fullpath = (fullpath ? fullpath : directory);
   //info.external.parentpath = NULL;
   info.external.callbackdata = callbackdata;
-  info.toppath = fullpath;
+  info.toppath = info.external.fullpath;
   status = DIRTRAVFN(iteration)(&info, filecallback, foldercallbackbefore, foldercallbackafter, callbackdata);
   if (fullpath)
     free(fullpath);
