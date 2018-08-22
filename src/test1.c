@@ -35,6 +35,7 @@ int file_callback (DIRTRAVFN(entry) info)
   struct folder_data_struct* data = (struct folder_data_struct*)info->callbackdata;
   DIRPRINTF(DIRTEXT("%*c%s\n"), data->level * 2 + 2, DIRTEXT(' '), DIRTRAVFN(prop_get_name)(info));
   DIRPRINTF(DIRTEXT("%*c [%s]\n"), data->level * 2 + 2, DIRTEXT(' '), DIRTRAVFN(prop_get_parentpath)(info));
+  DIRPRINTF(DIRTEXT("%*c [%s]\n"), data->level * 2 + 2, DIRTEXT(' '), DIRTRAVFN(prop_get_top_path)(info));
   return 0;
 }
 
@@ -42,6 +43,8 @@ int folder_callback_before (DIRTRAVFN(entry) info)
 {
   struct folder_data_struct* data = (struct folder_data_struct*)info->callbackdata;
   DIRPRINTF(DIRTEXT("%*c<%s>  %s\n"), data->level * 2 + 2, DIRTEXT(' '), DIRTRAVFN(prop_get_path)(info), DIRTRAVFN(prop_get_name)(info));
+  DIRPRINTF(DIRTEXT("%*c [%s]\n"), data->level * 2 + 2, DIRTEXT(' '), DIRTRAVFN(prop_get_top_path)(info));
+  DIRPRINTF(DIRTEXT("%*c [%s]\n"), data->level * 2 + 2, DIRTEXT(' '), DIRTRAVFN(prop_get_relative_path)(info));
   data->level++;
   return 0;
 }

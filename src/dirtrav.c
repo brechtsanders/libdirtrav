@@ -94,6 +94,7 @@ struct DIRTRAVFN(entry_internal_struct) {
 #else
   STAT_STRUCT statbuf;
 #endif
+  const DIRCHAR* toppath;   /////TO DO: consider making this public
 };
 
 DLL_EXPORT_DIRTRAV void DIRTRAVFN(get_version) (int* pmajor, int* pminor, int* pmicro)
@@ -175,6 +176,7 @@ int DIRTRAVFN(iteration) (struct DIRTRAVFN(entry_internal_struct)* parentfolderi
   info.external.parentpath = directory;
   info.external.parentinfo = (struct DIRTRAVFN(entry_struct)*)parentfolderinfo;
   info.external.callbackdata = callbackdata;
+  info.toppath = parentfolderinfo->toppath;
 #ifdef FIND_FIRST_EX_LARGE_FETCH
   if ((dir = DIRWINFN(FindFirstFileEx)(searchpath, FindExInfoBasic, &info.direntry, FindExSearchNameMatch, NULL, FIND_FIRST_EX_CASE_SENSITIVE | FIND_FIRST_EX_LARGE_FETCH)) != INVALID_HANDLE_VALUE) {
 #else
@@ -235,6 +237,7 @@ int DIRTRAVFN(iteration) (struct DIRTRAVFN(entry_internal_struct)* parentfolderi
   info.external.parentpath = directory;
   info.external.parentinfo = (struct DIRTRAVFN(entry_struct)*)parentfolderinfo;
   info.external.callbackdata = callbackdata;
+  info.toppath = parentfolderinfo->toppath;
   if ((dir = DIR_WFN(opendir)(directory)) != NULL) {
     //process files and directories
     while (status == 0 && (direntry = DIR_WFN(readdir)(dir)) != NULL) {
@@ -304,13 +307,14 @@ DLL_EXPORT_DIRTRAV int DIRTRAVFN(traverse_directory) (const DIRCHAR* directory, 
   info.external.fullpath = (fullpath ? fullpath : directory);
   //info.external.parentpath = NULL;
   info.external.callbackdata = callbackdata;
+  info.toppath = fullpath;
   status = DIRTRAVFN(iteration)(&info, filecallback, foldercallbackbefore, foldercallbackafter, callbackdata);
   if (fullpath)
     free(fullpath);
   return status;
 }
 
-int DIRTRAVFN(traverse_fullpath_parts_from_position) (const DIRCHAR* fullpath, size_t pos, DIRTRAVFN(folder_callback_fn) foldercallbackbefore, DIRTRAVFN(folder_callback_fn) foldercallbackafter, void* callbackdata)
+int DIRTRAVFN(traverse_fullpath_parts_from_position) (const DIRCHAR* fullpath, size_t pos, DIRTRAVFN(folder_callback_fn) foldercallbackbefore, DIRTRAVFN(folder_callback_fn) foldercallbackafter, struct DIRTRAVFN(entry_internal_struct)* parentfolderinfo)
 {
   size_t nextpos;
   struct DIRTRAVFN(entry_internal_struct) info;
@@ -334,17 +338,18 @@ int DIRTRAVFN(traverse_fullpath_parts_from_position) (const DIRCHAR* fullpath, s
   //initialize directory information structure
   info.external.filename = currentpath + pos;
   info.external.fullpath = currentpath;
-  info.external.parentpath = NULL;  /////TO DO: parent path
-  info.external.parentinfo = NULL;  /////TO DO: parent folder info
-  info.external.callbackdata = callbackdata;
+  info.external.parentpath = parentfolderinfo->external.fullpath;
+  info.external.parentinfo = (struct DIRTRAVFN(entry_struct)*)parentfolderinfo;
+  info.external.callbackdata = parentfolderinfo->external.callbackdata;
   info.external.folderlocaldata = NULL;
+  info.toppath = parentfolderinfo->toppath;
   //call callback before processing folder
   if (foldercallbackbefore && status == 0) {
     (status = (*foldercallbackbefore)((DIRTRAVFN(entry))&info));
   }
   //recurse through next parts
   if (status == 0 && fullpath[nextpos])
-    status = DIRTRAVFN(traverse_fullpath_parts_from_position)(fullpath, nextpos, foldercallbackbefore, foldercallbackafter, callbackdata);
+    status = DIRTRAVFN(traverse_fullpath_parts_from_position)(fullpath, nextpos, foldercallbackbefore, foldercallbackafter, &info);
   //call callback after processing folder
   if (foldercallbackafter) {
     if (status == 0)
@@ -360,17 +365,32 @@ DLL_EXPORT_DIRTRAV int DIRTRAVFN(traverse_path_parts) (const DIRCHAR* startpath,
 {
   size_t i;
   size_t pos;
+  int status;
   DIRCHAR* fullpath;
+  struct DIRTRAVFN(entry_internal_struct) info;
+  DIRCHAR* startpathfixed;
   if (!path || !*path)
     return 0;
   //construct full path
   if (!startpath || !*startpath) {
     pos = 0;
     fullpath = DIRSTRDUP(path);
+    startpathfixed = DIRSTRDUP("");
   } else {
-    pos = DIRSTRLEN(startpath);
+    //add trailing to start path separator if missing
+    size_t startpathlen = DIRSTRLEN(startpath);
+    if (startpathlen > 0 && startpath[startpathlen - 1] != PATH_SEPARATOR) {
+      startpathfixed = (DIRCHAR*)malloc((startpathlen + 2) * sizeof(DIRCHAR));
+      memcpy(startpathfixed, startpath, startpathlen * sizeof(DIRCHAR));
+      startpathfixed[startpathlen] = PATH_SEPARATOR;
+      startpathfixed[startpathlen + 1] = 0;
+    } else {
+      startpathfixed = DIRSTRDUP(startpath);
+    }
+    //determine full path
+    pos = DIRSTRLEN(startpathfixed);
     fullpath = (DIRCHAR*)malloc((pos + DIRSTRLEN(path) + 2) * sizeof(DIRCHAR));
-    DIRSTRCPY(fullpath, startpath);
+    DIRSTRCPY(fullpath, startpathfixed);
     if (pos > 0 && fullpath[pos] != PATH_SEPARATOR && path[0] != PATH_SEPARATOR)
       fullpath[pos++] = PATH_SEPARATOR;
     /////TO DO: what if startpath ends and path begins with PATH_SEPARATOR?
@@ -421,7 +441,18 @@ DLL_EXPORT_DIRTRAV int DIRTRAVFN(traverse_path_parts) (const DIRCHAR* startpath,
       i++;
     }
   }
-  return DIRTRAVFN(traverse_fullpath_parts_from_position)(fullpath, pos, foldercallbackbefore, foldercallbackafter, callbackdata);
+  //initialize directory information structure
+  info.external.filename = NULL;
+  info.external.fullpath = fullpath;
+  info.external.parentpath = NULL;
+  info.external.parentinfo = NULL;
+  info.external.callbackdata = callbackdata;
+  info.external.folderlocaldata = NULL;
+  info.toppath = startpathfixed;
+  status = DIRTRAVFN(traverse_fullpath_parts_from_position)(fullpath, pos, foldercallbackbefore, foldercallbackafter, &info);
+  //clean up
+  free(startpathfixed);
+  return status;
 }
 
 int DIRTRAVFN(make_full_path_callback) (DIRTRAVFN(entry) info)
@@ -498,6 +529,18 @@ DLL_EXPORT_DIRTRAV time_t DIRTRAVFN(prop_get_access_time) (DIRTRAVFN(entry) entr
 #else
   return FILETIME2time_t(((struct DIRTRAVFN(entry_internal_struct)*)entry)->statbuf.st_atime);
 #endif
+}
+
+DLL_EXPORT_DIRTRAV const DIRCHAR* dirtrav_prop_get_top_path (dirtrav_entry entry)
+{
+  return ((struct DIRTRAVFN(entry_internal_struct)*)entry)->toppath;
+}
+
+DLL_EXPORT_DIRTRAV const DIRCHAR* dirtrav_prop_get_relative_path (dirtrav_entry entry)
+{
+  size_t toppathlen;
+  toppathlen = DIRSTRLEN(((struct DIRTRAVFN(entry_internal_struct)*)entry)->toppath);
+  return entry->fullpath + toppathlen;
 }
 
 #undef DIRTRAV_GENERATE
