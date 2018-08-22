@@ -215,7 +215,7 @@ DLL_EXPORT_DIRTRAV time_t dirtravw_prop_get_access_time (dirtravw_entry entry);
  * \sa     dirtrav_entry
  * \sa     dirtrav_traverse_directory()
  */
-DLL_EXPORT_DIRTRAV const wchar_t* dirtrav_prop_get_top_path (dirtrav_entry entry);
+DLL_EXPORT_DIRTRAV const wchar_t* dirtrav_prop_get_top_path (dirtravw_entry entry);
 
 /*! \brief get relative path (relative to top path from where directory traversal was started)
  * \param  entry                 system properties of directory entry
@@ -223,7 +223,7 @@ DLL_EXPORT_DIRTRAV const wchar_t* dirtrav_prop_get_top_path (dirtrav_entry entry
  * \sa     dirtrav_entry
  * \sa     dirtrav_traverse_directory()
  */
-DLL_EXPORT_DIRTRAV const wchar_t* dirtrav_prop_get_relative_path (dirtrav_entry entry);
+DLL_EXPORT_DIRTRAV const wchar_t* dirtrav_prop_get_relative_path (dirtravw_entry entry);
 
 #ifdef __cplusplus
 }

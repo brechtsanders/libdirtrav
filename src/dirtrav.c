@@ -375,7 +375,7 @@ DLL_EXPORT_DIRTRAV int DIRTRAVFN(traverse_path_parts) (const DIRCHAR* startpath,
   if (!startpath || !*startpath) {
     pos = 0;
     fullpath = DIRSTRDUP(path);
-    startpathfixed = DIRSTRDUP("");
+    startpathfixed = DIRSTRDUP(DIRTEXT(""));
   } else {
     //add trailing to start path separator if missing
     size_t startpathlen = DIRSTRLEN(startpath);
@@ -531,12 +531,12 @@ DLL_EXPORT_DIRTRAV time_t DIRTRAVFN(prop_get_access_time) (DIRTRAVFN(entry) entr
 #endif
 }
 
-DLL_EXPORT_DIRTRAV const DIRCHAR* dirtrav_prop_get_top_path (dirtrav_entry entry)
+DLL_EXPORT_DIRTRAV const DIRCHAR* dirtrav_prop_get_top_path (DIRTRAVFN(entry) entry)
 {
   return ((struct DIRTRAVFN(entry_internal_struct)*)entry)->toppath;
 }
 
-DLL_EXPORT_DIRTRAV const DIRCHAR* dirtrav_prop_get_relative_path (dirtrav_entry entry)
+DLL_EXPORT_DIRTRAV const DIRCHAR* dirtrav_prop_get_relative_path (DIRTRAVFN(entry) entry)
 {
   size_t toppathlen;
   toppathlen = DIRSTRLEN(((struct DIRTRAVFN(entry_internal_struct)*)entry)->toppath);
