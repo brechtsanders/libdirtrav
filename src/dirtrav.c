@@ -531,12 +531,12 @@ DLL_EXPORT_DIRTRAV time_t DIRTRAVFN(prop_get_access_time) (DIRTRAVFN(entry) entr
 #endif
 }
 
-DLL_EXPORT_DIRTRAV const DIRCHAR* dirtrav_prop_get_top_path (DIRTRAVFN(entry) entry)
+DLL_EXPORT_DIRTRAV const DIRCHAR* DIRTRAVFN(prop_get_top_path) (DIRTRAVFN(entry) entry)
 {
   return ((struct DIRTRAVFN(entry_internal_struct)*)entry)->toppath;
 }
 
-DLL_EXPORT_DIRTRAV const DIRCHAR* dirtrav_prop_get_relative_path (DIRTRAVFN(entry) entry)
+DLL_EXPORT_DIRTRAV const DIRCHAR* DIRTRAVFN(prop_get_relative_path) (DIRTRAVFN(entry) entry)
 {
   size_t toppathlen;
   toppathlen = DIRSTRLEN(((struct DIRTRAVFN(entry_internal_struct)*)entry)->toppath);

@@ -24,3 +24,29 @@
 	<stdint.h>
 	<sys/stat.h>
 
+1534950319 source:\\server\users\brecht\sources\cpp\libdirtrav\src\folderstats.c
+	<stdio.h>
+	<stdlib.h>
+	<stdint.h>
+	<string.h>
+	<inttypes.h>
+	<time.h>
+	<ctype.h>
+	<unistd.h>
+	<fcntl.h>
+	"dirtravw.h"
+	<windows.h>
+	<shellapi.h>
+	"dirtrav.h"
+
+1534949481 \\server\users\brecht\sources\cpp\libdirtrav\include\dirtravw.h
+	<stdlib.h>
+	<stdint.h>
+	<sys/stat.h>
+	<wchar.h>
+
+1534931062 \\server\users\brecht\sources\cpp\libdirtrav\include\dirtrav.h
+	<stdlib.h>
+	<stdint.h>
+	<sys/stat.h>
+
