@@ -543,7 +543,7 @@ DLL_EXPORT_DIRTRAV const DIRCHAR* DIRTRAVFN(prop_get_relative_path) (DIRTRAVFN(e
   return entry->fullpath + toppathlen;
 }
 
-DLL_EXPORT_DIRTRAV const DIRCHAR* DIRTRAVFN(prop_get_owner) (DIRTRAVFN(entry) entry)
+DLL_EXPORT_DIRTRAV DIRCHAR* DIRTRAVFN(prop_get_owner) (DIRTRAVFN(entry) entry)
 {
   DIRCHAR* result = NULL;
 //  entry->fullpath
