@@ -4,6 +4,11 @@
 #include <dirent.h>
 #include <sys/stat.h>
 //#include <unistd.h>
+#define LOOKUP_SID
+#if defined(_WIN32) && defined(LOOKUP_SID)
+#include <windows.h>
+#include <sddl.h>
+#endif
 
 #if defined(DIRTRAV_GENERATE)
 
@@ -473,6 +478,26 @@ DLL_EXPORT_DIRTRAV int DIRTRAVFN(make_full_path) (const DIRCHAR* startpath, cons
 #endif
   return DIRTRAVFN(traverse_path_parts)(startpath, path, DIRTRAVFN(make_full_path_callback), NULL, &mode);
   /////TO DO: proper result code indicating if tree was not successfully created
+}
+
+#ifndef MAX_EXTENSION_LENGTH
+#define MAX_EXTENSION_LENGTH 12
+#endif
+
+DLL_EXPORT_DIRTRAV const DIRCHAR* DIRTRAVFN(prop_get_extension) (DIRTRAVFN(entry) entry)
+{
+  const DIRCHAR* p;
+  size_t extlen;
+  const DIRCHAR* filename = entry->filename;
+  if (!filename || !*filename)
+    return NULL;
+  p = filename + DIRSTRLEN(filename);
+  extlen = 0;
+  while (p-- != filename && extlen++ < MAX_EXTENSION_LENGTH) {
+    if (*p == DIRTEXT('.'))
+      return p;
+  }
+  return NULL;
 }
 
 DLL_EXPORT_DIRTRAV int DIRTRAVFN(prop_is_directory) (DIRTRAVFN(entry) entry)

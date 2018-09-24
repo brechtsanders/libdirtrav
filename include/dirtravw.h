@@ -161,6 +161,15 @@ DLL_EXPORT_DIRTRAV int dirtravw_make_full_path (const wchar_t* startpath, const 
  */
 #define dirtravw_prop_get_name(entry) (entry->filename)
 
+/*! \brief get extension of current file
+ * \param  entry                 system properties of directory entry
+ * \return file extension (including the leading dot) or NULL if none
+ * \sa     dirtravw_entry
+ * \sa     dirtravw_traverse_directory()
+ * \sa     dirtravw_prop_get_name()
+ */
+DLL_EXPORT_DIRTRAV const wchar_t* dirtravw_prop_get_extension (dirtravw_entry entry);
+
 /*! \brief determine if current file or folder is a folder
  * \param  entry                 system properties of directory entry
  * \return non-zero if current file or folder is a folder
