@@ -1,1 +1,25 @@
 # depslib dependency file v1.0
+1533116232 source:z:\libdirtrav\src\rdir.c
+	<stdio.h>
+	<stdlib.h>
+	<stdint.h>
+	<string.h>
+	<inttypes.h>
+	<time.h>
+	<fcntl.h>
+	"dirtravw.h"
+	<windows.h>
+	<shellapi.h>
+	"dirtrav.h"
+
+1537739126 z:\libdirtrav\include\dirtravw.h
+	<stdlib.h>
+	<stdint.h>
+	<sys/stat.h>
+	<wchar.h>
+
+1537738472 z:\libdirtrav\include\dirtrav.h
+	<stdlib.h>
+	<stdint.h>
+	<sys/stat.h>
+

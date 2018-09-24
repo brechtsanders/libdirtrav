@@ -1,5 +1,5 @@
 /*****************************************************************************
-Copyright (C)  2018  Brecht Sanders  All Rights Reserved
+Copyright (C)  2013-2018  Brecht Sanders  All Rights Reserved
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -58,13 +58,13 @@ extern "C" {
  * \param  pmajor        pointer to integer that will receive major version number
  * \param  pminor        pointer to integer that will receive minor version number
  * \param  pmicro        pointer to integer that will receive micro version number
- * \sa     dirtrav_get_version_string()
+ * \sa     dirtravw_get_version_string()
  */
 DLL_EXPORT_DIRTRAV void dirtravw_get_version (int* pmajor, int* pminor, int* pmicro);
 
 /*! \brief get dirtrav version string
  * \return version string
- * \sa     dirtrav_get_version()
+ * \sa     dirtravw_get_version()
  */
 DLL_EXPORT_DIRTRAV const wchar_t* dirtravw_get_version_string ();
 
@@ -212,18 +212,26 @@ DLL_EXPORT_DIRTRAV time_t dirtravw_prop_get_access_time (dirtravw_entry entry);
 /*! \brief get top path from where directory traversal was started
  * \param  entry                 system properties of directory entry
  * \return top path
- * \sa     dirtrav_entry
- * \sa     dirtrav_traverse_directory()
+ * \sa     dirtravw_entry
+ * \sa     dirtravw_traverse_directory()
  */
 DLL_EXPORT_DIRTRAV const wchar_t* dirtravw_prop_get_top_path (dirtravw_entry entry);
 
 /*! \brief get relative path (relative to top path from where directory traversal was started)
  * \param  entry                 system properties of directory entry
  * \return relative path
- * \sa     dirtrav_entry
- * \sa     dirtrav_traverse_directory()
+ * \sa     dirtravw_entry
+ * \sa     dirtravw_traverse_directory()
  */
 DLL_EXPORT_DIRTRAV const wchar_t* dirtravw_prop_get_relative_path (dirtravw_entry entry);
+
+/*! \brief get owner name
+ * \param  entry                 system properties of directory entry
+ * \return name of owner (the caller must call free()) or NULL on error
+ * \sa     dirtravw_entry
+ * \sa     dirtravw_traverse_directory()
+ */
+DLL_EXPORT_DIRTRAV wchar_t* dirtravw_prop_get_owner (dirtravw_entry entry);
 
 #ifdef __cplusplus
 }

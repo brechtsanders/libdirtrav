@@ -543,6 +543,67 @@ DLL_EXPORT_DIRTRAV const DIRCHAR* DIRTRAVFN(prop_get_relative_path) (DIRTRAVFN(e
   return entry->fullpath + toppathlen;
 }
 
+DLL_EXPORT_DIRTRAV const DIRCHAR* DIRTRAVFN(prop_get_owner) (DIRTRAVFN(entry) entry)
+{
+  DIRCHAR* result = NULL;
+//  entry->fullpath
+#ifdef _WIN32
+//  DIRWINFN(CreateDirectory)(((struct DIRTRAVFN(entry_internal_struct)*)info)->external.fullpath, NULL);
+  SECURITY_DESCRIPTOR* secdes;
+  PSID ownersid;
+  BOOL ownderdefaulted;
+  DWORD len = 0;
+  DIRWINFN(GetFileSecurity)(entry->fullpath, OWNER_SECURITY_INFORMATION, NULL, 0, &len);
+  if (len > 0) {
+    secdes = (SECURITY_DESCRIPTOR*)malloc(len);
+    if (DIRWINFN(GetFileSecurity)(entry->fullpath, OWNER_SECURITY_INFORMATION, secdes, len, &len)) {
+      if (GetSecurityDescriptorOwner(secdes, &ownersid, &ownderdefaulted)) {
+        SID_NAME_USE accounttype;
+        DIRCHAR* name;
+        DIRCHAR* domain;
+        DWORD domainlen;
+        len = 0;
+        domainlen = 0;
+        DIRWINFN(LookupAccountSid)(NULL, ownersid, NULL, &len, NULL, &domainlen, &accounttype);
+        if (len > 0 && domainlen > 0) {
+          name = (DIRCHAR*)malloc(len * sizeof(DIRCHAR));
+          domain = (DIRCHAR*)malloc(domainlen * sizeof(DIRCHAR));
+          if (DIRWINFN(LookupAccountSid)(NULL, ownersid, name, &len, domain, &domainlen, &accounttype)) {
+            result = (DIRCHAR*)malloc((domainlen + len + 2) * sizeof(DIRCHAR));
+            memcpy(result, domain, domainlen * sizeof(DIRCHAR));
+            result[domainlen] = '\\';
+            DIRSTRCPY(result + domainlen + 1, name);
+          }
+#ifdef LOOKUP_SID
+          else {
+            DIRCHAR* sidstring;
+            if (DIRWINFN(ConvertSidToStringSid)(ownersid, &sidstring)) {
+              result = DIRSTRDUP(sidstring);
+              LocalFree(sidstring);
+            }
+          }
+#endif
+          free(name);
+          free(domain);
+        }
+      }
+    }
+    free(secdes);
+  }
+  //GROUP_SECURITY_INFORMATION
+#else
+  struct stat fileinfo;
+  if (stat(entry->fullpath, &fileinfo) == 0) {
+    struct passwd* pw = getpwuid(fileinfo.st_uid);
+    if (pw) {
+      result = strdup(pw->pw_name);
+    }
+    //struct group* gr = getgrgid(fileinfo.st_gid);
+  }
+#endif
+  return result;
+}
+
 #undef DIRTRAV_GENERATE
 #undef DIRTRAV_GENERATE_WIDE
 #undef DIRCHAR

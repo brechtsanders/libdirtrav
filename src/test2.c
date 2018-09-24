@@ -56,11 +56,15 @@ int file_callback (DIRTRAVFN(entry) info)
   data->totalsize += DIRTRAVFN(prop_get_size)(info);
   if (data->level == 0) {
     char buf[20];
+    DIRCHAR* s;
     time_t t;
     DIRPRINTF(DIRTEXT("%s\t%lu"), DIRTRAVFN(prop_get_name)(info), (unsigned long)DIRTRAVFN(prop_get_size)(info));
     t = DIRTRAVFN(prop_get_modify_time)(info);
     strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M:%S", localtime(&t));
     printf("\t%s", buf);
+    s = DIRTRAVFN(prop_get_owner)(info);
+    DIRPRINTF(DIRTEXT("\t%s"), (s ? s : "-"));
+    free(s);
     printf("\n");
   }
   return 0;
