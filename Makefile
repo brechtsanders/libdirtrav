@@ -64,7 +64,7 @@ TOOLS_BIN = tree$(BINEXT) rdir$(BINEXT) folderstats$(BINEXT)
 EXAMPLES_BIN = test1$(BINEXT)
 
 COMMON_PACKAGE_FILES = README.md LICENSE Changelog.txt
-SOURCE_PACKAGE_FILES = $(COMMON_PACKAGE_FILES) Makefile CMakeLists.txt doc/Doxyfile include/*.h src/*.c examples/*.c build/*.workspace build/*.cbp build/*.layout build/*.depend
+SOURCE_PACKAGE_FILES = $(COMMON_PACKAGE_FILES) Makefile CMakeLists.txt doc/Doxyfile include/*.h src/*.c build/*.workspace build/*.cbp build/*.depend
 
 default: all
 
@@ -129,6 +129,10 @@ version:
 #.PHONY: package
 #package: version
 #	tar cfJ libdirtrav-$(shell cat version).tar.xz --transform="s?^?libdirtrav-$(shell cat version)/?" $(SOURCE_PACKAGE_FILES)
+
+.PHONY: package
+package: version
+	tar cfJ libdirtrav-$(shell cat version).tar.xz --transform="s?^?libdirtrav-$(shell cat version)/?" $(SOURCE_PACKAGE_FILES)
 
 .PHONY: package
 binarypackage: version
