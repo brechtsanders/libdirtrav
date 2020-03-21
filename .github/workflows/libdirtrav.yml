@@ -1,0 +1,68 @@
+name: GitHub-CI for ci-test
+#name: CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+#jobs:
+#  build:
+#    # The type of runner that the job will run on
+#    runs-on: ubuntu-latest
+#
+#    # Steps represent a sequence of tasks that will be executed as part of the job
+#    steps:
+#    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+#    - uses: actions/checkout@v2
+#    - name: Run a multi-line script
+#      run: |
+#        make --version
+#        gcc --version
+#        mkdir -p build_result
+#        make install PREFIX=build_result DOXYGEN=
+jobs:
+  build:
+    name: ${{ matrix.config.name }}
+    runs-on: ${{ matrix.config.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+        - {
+            name: "Windows MSVC", artifact: "Windows-MSVC.tar.xz",
+            os: windows-latest,
+            cc: "cl", cxx: "cl",
+            environment_script: "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat"
+          }
+        - {
+            name: "Windows MinGW", artifact: "Windows-MinGW.tar.bz2",
+            os: windows-latest,
+            cc: "gcc", cxx: "g++"
+          }
+        - {
+            name: "Ubuntu GCC", artifact: "Linux.tar.bz2",
+            os: ubuntu-latest,
+            cc: "gcc", cxx: "g++"
+          }
+        - {
+            name: "macOS Clang", artifact: "macOS.tar.bz2",
+            os: macos-latest,
+            cc: "clang", cxx: "clang++"
+          }
+    steps:
+    - uses: actions/checkout@v1
+    - name: Compile, install, package
+      run: |
+        make install PREFIX=build_result DOXYGEN= CC=${{ matrix.config.cc }}
+        tar cfj ./${{ matrix.config.artifact }} --strip-components=1 build_result
+    - name: Pack
+      run: |
+        tar cfj ./${{ matrix.config.artifact }} --strip-components=1 build_result
+    - name: Upload
+      uses: actions/upload-artifact@v1
+      with:
+        path: ./${{ matrix.config.artifact }}
+        name: ${{ matrix.config.artifact }}
