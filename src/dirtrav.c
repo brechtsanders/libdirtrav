@@ -5,9 +5,15 @@
 #include <sys/stat.h>
 //#include <unistd.h>
 #define LOOKUP_SID
-#if defined(_WIN32) && defined(LOOKUP_SID)
+#ifdef _WIN32
+#ifdef LOOKUP_SID
+#define WINVER 0x0500
 #include <windows.h>
 #include <sddl.h>
+#endif
+#else
+#include <sys/types.h>
+#include <pwd.h>
 #endif
 
 #if defined(DIRTRAV_GENERATE)

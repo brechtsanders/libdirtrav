@@ -48,7 +48,7 @@ Building with CMake
   + `-DBUILD_STATIC:BOOL=OFF` - Don't build static libraries
   + `-DBUILD_SHARED:BOOL=OFF` - Don't build shared libraries
   + `-DBUILD_TOOLS:BOOL=OFF` - Don't build tools (only libraries)
-  + `-DWITH_WIDE:BOOL=ON` - Also build UTF-16 library (ldirtrav)
+  + `-DWITH_WIDE:BOOL=ON` - Only on Windows: also build UTF-16 library (libdirtravw)
   + `-DFORCE_OPENDIR:BOOL=ON` - Only on Windows: use opendir() and readdir() instead of native Windows functions
 - build and install by running `make install` (or `make install/strip` to strip symbols)
 

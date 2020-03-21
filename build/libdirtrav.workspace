@@ -13,8 +13,8 @@
 			<Depends filename="libdirtrav_static.cbp" />
 		</Project>
 		<Project filename="test2.cbp">
-			<Depends filename="libdirtrav_shared.cbp" />
-			<Depends filename="libdirtravw_shared.cbp" />
+			<Depends filename="libdirtrav_static.cbp" />
+			<Depends filename="libdirtravw_static.cbp" />
 		</Project>
 		<Project filename="tree.cbp">
 			<Depends filename="libdirtrav_static.cbp" />
