@@ -1,4 +1,4 @@
-name: GitHub-CI for ci-test
+name: GitHub-CI for libdirtrav
 #name: CI
 
 on:
