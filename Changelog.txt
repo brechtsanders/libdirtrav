@@ -5,6 +5,8 @@
   * added dirtrav_supports_elevate_access()
   * ran valgrind tests on Debian Linux
   * fixed memory leak (missing free(fullpath)) in dirtrav_traverse_path_parts()
+  * added initial Makefile for building without CMake
+  * added CI build file .github/workflows/libdirtrav.yml
 
 0.2.6
 
