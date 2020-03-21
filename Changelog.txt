@@ -1,3 +1,11 @@
+0.2.7
+
+2020-03-21  Brecht Sanders  https://github.com/brechtsanders/
+
+  * added dirtrav_supports_elevate_access()
+  * ran valgrind tests on Debian Linux
+  * fixed memory leak (missing free(fullpath)) in dirtrav_traverse_path_parts()
+
 0.2.6
 
 2018-09-24  Brecht Sanders  https://github.com/brechtsanders/

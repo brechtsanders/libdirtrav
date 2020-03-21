@@ -68,21 +68,26 @@ int main ()
 int main(int argc, char *argv[])
 {
 #endif
+  int i;
   int status;
   const DIRCHAR* errmsg;
   struct folder_data_struct folderdata = {0};
 
   DIRPRINTF(DIRTEXT("Version %s\n"), DIRTRAVFN(get_version_string)());
 
-  if ((errmsg = DIRTRAVFN(elevate_access)()) != NULL) {
-    DIRPRINTF(DIRTEXT("Error elevating directory access: %s\n"), errmsg);
+  if (DIRTRAVFN(supports_elevate_access())) {
+    if ((errmsg = DIRTRAVFN(elevate_access)()) != NULL) {
+      DIRPRINTF(DIRTEXT("Error elevating directory access: %s\n"), errmsg);
+    }
   }
 
-  status = DIRTRAVFN(traverse_directory)(argv[1], file_callback, folder_callback_before, folder_callback_after, &folderdata);
-  if (status == 0)
-    DIRPRINTF(DIRTEXT("Folder traversed successfully\n"));
-  else
-    DIRPRINTF(DIRTEXT("Folder not completely traversed\n"));
+  for (i = 1; i < argc; i++) {
+    status = DIRTRAVFN(traverse_directory)(argv[i], file_callback, folder_callback_before, folder_callback_after, &folderdata);
+    if (status == 0)
+      DIRPRINTF(DIRTEXT("Folder traversed successfully\n"));
+    else
+      DIRPRINTF(DIRTEXT("Folder not completely traversed\n"));
+  }
 
   folderdata.level = 0;
   DIRTRAVFN(traverse_path_parts)(DIRTEXT("C:\\TEMP\\Test\\1\\2\\3"), DIRTEXT("4\\5\\6"), folder_callback_before, folder_callback_after, &folderdata);

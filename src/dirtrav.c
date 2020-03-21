@@ -123,6 +123,15 @@ DLL_EXPORT_DIRTRAV const DIRCHAR* DIRTRAVFN(get_version_string) ()
   return DIRTEXT(DIRTRAV_VERSION_STRING);
 }
 
+DLL_EXPORT_DIRTRAV int DIRTRAVFN(supports_elevate_access) ()
+{
+#ifdef _WIN32
+  return 1;
+#else
+  return 0;
+#endif
+}
+
 DLL_EXPORT_DIRTRAV const DIRCHAR* DIRTRAVFN(elevate_access) ()
 {
 #ifdef _WIN32
@@ -462,6 +471,7 @@ DLL_EXPORT_DIRTRAV int DIRTRAVFN(traverse_path_parts) (const DIRCHAR* startpath,
   info.toppath = startpathfixed;
   status = DIRTRAVFN(traverse_fullpath_parts_from_position)(fullpath, pos, foldercallbackbefore, foldercallbackafter, &info);
   //clean up
+  free(fullpath);
   free(startpathfixed);
   return status;
 }

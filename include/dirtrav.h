@@ -66,6 +66,11 @@ DLL_EXPORT_DIRTRAV void dirtrav_get_version (int* pmajor, int* pminor, int* pmic
  */
 DLL_EXPORT_DIRTRAV const char* dirtrav_get_version_string ();
 
+/*! \brief check if enabling privileged access is supported (currently only implemented on Windows)
+ * \return non-zero if elevating to privileged access is supported or zero if not
+*/
+DLL_EXPORT_DIRTRAV int dirtrav_supports_elevate_access ();
+
 /*! \brief enable privileged access to allow reading all files and directories (only implemented on Windows)
  * \return NULL on success or error message
 */
