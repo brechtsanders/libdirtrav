@@ -46,7 +46,7 @@ endif
 endif
 
 libdirtrav_OBJ = src/dirtrav.o
-libdirtrav_LDFLAGS = -lzip -lexpat
+libdirtrav_LDFLAGS = 
 libdirtrav_SHARED_LDFLAGS =
 ifneq ($(OS),Windows_NT)
 SHARED_CFLAGS += -fPIC
