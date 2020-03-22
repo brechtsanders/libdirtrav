@@ -3,6 +3,8 @@
 2020-03-22  Brecht Sanders  https://github.com/brechtsanders/
 
   * fixed dirtrav_prop_get_owner() in Windows to return SID if user name wasn't found locally (instead of NULL)
+  * added Doxygen HTML manual generation
+  * added Doxygen and tools to Makefile
   
 0.2.7
 

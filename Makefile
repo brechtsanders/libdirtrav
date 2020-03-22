@@ -68,7 +68,7 @@ SOURCE_PACKAGE_FILES = $(COMMON_PACKAGE_FILES) Makefile CMakeLists.txt doc/Doxyf
 
 default: all
 
-all: static-lib shared-lib
+all: static-lib shared-lib $(TOOLS_BIN)
 
 %.o: %.c
 	$(CC) -c -o $@ $< $(CFLAGS) 
@@ -100,6 +100,15 @@ tools: $(TOOLS_BIN)
 examples: $(EXAMPLES_BIN)
 
 
+tree$(BINEXT): src/tree.static.o $(LIBPREFIX)dirtrav$(LIBEXT)
+	$(CC) -o $@ src/$(@:%$(BINEXT)=%.static.o) $(LIBPREFIX)dirtrav$(LIBEXT) $(libdirtrav_LDFLAGS) $(LDFLAGS)
+
+rdir$(BINEXT): src/rdir.static.o $(LIBPREFIX)dirtrav$(LIBEXT)
+	$(CC) -o $@ src/$(@:%$(BINEXT)=%.static.o) $(LIBPREFIX)dirtrav$(LIBEXT) $(libdirtrav_LDFLAGS) $(LDFLAGS)
+
+folderstats$(BINEXT): src/folderstats.static.o $(LIBPREFIX)dirtrav$(LIBEXT)
+	$(CC) -o $@ src/$(@:%$(BINEXT)=%.static.o) $(LIBPREFIX)dirtrav$(LIBEXT) $(libdirtrav_LDFLAGS) $(LDFLAGS)
+
 test1$(BINEXT): src/test1.static.o $(LIBPREFIX)dirtrav$(LIBEXT)
 	$(CC) -o $@ src/$(@:%$(BINEXT)=%.static.o) $(LIBPREFIX)dirtrav$(LIBEXT) $(libdirtrav_LDFLAGS) $(LDFLAGS)
 
@@ -118,8 +127,11 @@ ifeq ($(OS),Windows_NT)
 else
 	$(CP) *$(SOEXT) $(PREFIX)/lib/
 endif
+	$(CP) $(TOOLS_BIN) $(PREFIX)/bin/
 ifdef DOXYGEN
 	$(CPDIR) doc/man $(PREFIX)/
+	$(MKDIR) $(PREFIX)/share/libdirtrav
+	$(CPDIR) doc/html $(PREFIX)/share/libdirtrav/
 endif
 
 .PHONY: version
@@ -148,6 +160,9 @@ endif
 
 .PHONY: clean
 clean:
-	$(RM) src/*.o *$(LIBEXT) *$(SOEXT) $(EXAMPLES_BIN) version libdirtrav-*.tar.xz doc/doxygen_sqlite3.db
+	$(RM) src/*.o *$(LIBEXT) *$(SOEXT) $(TOOLS_BIN) $(EXAMPLES_BIN) version libdirtrav-*.tar.xz doc/doxygen_sqlite3.db
+ifeq ($(OS),Windows_NT)
+	$(RM) *.def
+endif
 	$(RMDIR) doc/html doc/man
 

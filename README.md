@@ -29,6 +29,7 @@ Command line utilities
 Some command line utilities are included:
 - `tree` - lists folder tree structure
 - `rdir` - recursively lists folder contents
+- `folderstats` - get folder statistics
 
 Dependancies
 ------------

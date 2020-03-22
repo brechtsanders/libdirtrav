@@ -91,9 +91,9 @@ IF(BUILD_DOCUMENTATION)
   INSTALL(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/doc/man
     DESTINATION .
   )
-  #INSTALL(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/doc/html
-  #  DESTINATION share/doc
-  #)
+  INSTALL(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/doc/html
+    DESTINATION share/libdirtrav
+  )
 ENDIF()
 
 # installation specifications
