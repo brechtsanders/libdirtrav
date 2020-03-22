@@ -100,13 +100,16 @@ tools: $(TOOLS_BIN)
 examples: $(EXAMPLES_BIN)
 
 
-folderstats$(BINEXT): src/folderstats.static.o $(LIBPREFIX)dirtrav$(LIBEXT)
-	$(CC) -o $@ $^ $(libdirtrav_LDFLAGS) $(LDFLAGS)
-
 tree$(BINEXT): src/tree.static.o $(LIBPREFIX)dirtrav$(LIBEXT)
 	$(CC) -o $@ $^ $(libdirtrav_LDFLAGS) $(LDFLAGS)
 
 rdir$(BINEXT): src/rdir.static.o $(LIBPREFIX)dirtrav$(LIBEXT)
+	$(CC) -o $@ $^ $(libdirtrav_LDFLAGS) $(LDFLAGS)
+
+src/folderstats.static.o: src/folderstats.c
+	$(CC) -c -o $@ $< $(STATIC_CFLAGS) $(CFLAGS) 
+
+folderstats$(BINEXT): src/folderstats.static.o $(LIBPREFIX)dirtrav$(LIBEXT)
 	$(CC) -o $@ $^ $(libdirtrav_LDFLAGS) $(LDFLAGS)
 
 test1$(BINEXT): src/test1.static.o $(LIBPREFIX)dirtrav$(LIBEXT)
