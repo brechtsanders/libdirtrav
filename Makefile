@@ -101,16 +101,16 @@ examples: $(EXAMPLES_BIN)
 
 
 tree$(BINEXT): src/tree.static.o $(LIBPREFIX)dirtrav$(LIBEXT)
-	$(CC) -o $@ src/$(@:%$(BINEXT)=%.static.o) $(LIBPREFIX)dirtrav$(LIBEXT) $(libdirtrav_LDFLAGS) $(LDFLAGS)
+	$(CC) -o $@ $^ $(libdirtrav_LDFLAGS) $(LDFLAGS)
 
 rdir$(BINEXT): src/rdir.static.o $(LIBPREFIX)dirtrav$(LIBEXT)
-	$(CC) -o $@ src/$(@:%$(BINEXT)=%.static.o) $(LIBPREFIX)dirtrav$(LIBEXT) $(libdirtrav_LDFLAGS) $(LDFLAGS)
+	$(CC) -o $@ $^ $(libdirtrav_LDFLAGS) $(LDFLAGS)
 
 folderstats$(BINEXT): src/folderstats.static.o $(LIBPREFIX)dirtrav$(LIBEXT)
-	$(CC) -o $@ src/$(@:%$(BINEXT)=%.static.o) $(LIBPREFIX)dirtrav$(LIBEXT) $(libdirtrav_LDFLAGS) $(LDFLAGS)
+	$(CC) -o $@ $^ $(libdirtrav_LDFLAGS) $(LDFLAGS)
 
 test1$(BINEXT): src/test1.static.o $(LIBPREFIX)dirtrav$(LIBEXT)
-	$(CC) -o $@ src/$(@:%$(BINEXT)=%.static.o) $(LIBPREFIX)dirtrav$(LIBEXT) $(libdirtrav_LDFLAGS) $(LDFLAGS)
+	$(CC) -o $^ $(libdirtrav_LDFLAGS) $(LDFLAGS)
 
 .PHONY: doc
 doc:
