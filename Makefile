@@ -106,9 +106,6 @@ tree$(BINEXT): src/tree.static.o $(LIBPREFIX)dirtrav$(LIBEXT)
 rdir$(BINEXT): src/rdir.static.o $(LIBPREFIX)dirtrav$(LIBEXT)
 	$(CC) -o $@ $^ $(libdirtrav_LDFLAGS) $(LDFLAGS)
 
-src/folderstats.static.o: src/folderstats.c
-	$(CC) -c -o $@ $< $(STATIC_CFLAGS) $(CFLAGS) 
-
 folderstats$(BINEXT): src/folderstats.static.o $(LIBPREFIX)dirtrav$(LIBEXT)
 	$(CC) -o $@ $^ $(libdirtrav_LDFLAGS) $(LDFLAGS)
 
