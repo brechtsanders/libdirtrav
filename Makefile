@@ -34,7 +34,7 @@ RM = rm -f
 RMDIR = rm -rf
 CP = cp -f
 CPDIR = cp -rf
-DOXYGEN := $(shell which doxygen)
+DOXYGEN = $(shell which doxygen)
 
 OSALIAS := $(OS)
 ifeq ($(OS),Windows_NT)
