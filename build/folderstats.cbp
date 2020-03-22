@@ -96,15 +96,11 @@
 		</Compiler>
 		<Linker>
 			<Add option="-static" />
-			<Add library="libdirtravw" />
+			<Add library="dirtravw" />
 		</Linker>
 		<Unit filename="../src/folderstats.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Extensions>
-			<code_completion />
-			<envvars />
-			<debugger />
-		</Extensions>
+		<Extensions />
 	</Project>
 </CodeBlocks_project_file>
