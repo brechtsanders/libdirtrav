@@ -587,9 +587,7 @@ DLL_EXPORT_DIRTRAV const DIRCHAR* DIRTRAVFN(prop_get_relative_path) (DIRTRAVFN(e
 DLL_EXPORT_DIRTRAV DIRCHAR* DIRTRAVFN(prop_get_owner) (DIRTRAVFN(entry) entry)
 {
   DIRCHAR* result = NULL;
-//  entry->fullpath
 #ifdef _WIN32
-//  DIRWINFN(CreateDirectory)(((struct DIRTRAVFN(entry_internal_struct)*)info)->external.fullpath, NULL);
   SECURITY_DESCRIPTOR* secdes;
   PSID ownersid;
   BOOL ownderdefaulted;
@@ -605,8 +603,7 @@ DLL_EXPORT_DIRTRAV DIRCHAR* DIRTRAVFN(prop_get_owner) (DIRTRAVFN(entry) entry)
         DWORD domainlen;
         len = 0;
         domainlen = 0;
-        DIRWINFN(LookupAccountSid)(NULL, ownersid, NULL, &len, NULL, &domainlen, &accounttype);
-        if (len > 0 && domainlen > 0) {
+        if (DIRWINFN(LookupAccountSid)(NULL, ownersid, NULL, &len, NULL, &domainlen, &accounttype) && len > 0 && domainlen > 0) {
           name = (DIRCHAR*)malloc(len * sizeof(DIRCHAR));
           domain = (DIRCHAR*)malloc(domainlen * sizeof(DIRCHAR));
           if (DIRWINFN(LookupAccountSid)(NULL, ownersid, name, &len, domain, &domainlen, &accounttype)) {
@@ -615,23 +612,24 @@ DLL_EXPORT_DIRTRAV DIRCHAR* DIRTRAVFN(prop_get_owner) (DIRTRAVFN(entry) entry)
             result[domainlen] = '\\';
             DIRSTRCPY(result + domainlen + 1, name);
           }
-#ifdef LOOKUP_SID
-          else {
-            DIRCHAR* sidstring;
-            if (DIRWINFN(ConvertSidToStringSid)(ownersid, &sidstring)) {
-              result = DIRSTRDUP(sidstring);
-              LocalFree(sidstring);
-            }
-          }
-#endif
           free(name);
           free(domain);
         }
+#ifdef LOOKUP_SID
+        if (!result) {
+          DIRCHAR* sidstring;
+          if (DIRWINFN(ConvertSidToStringSid)(ownersid, &sidstring)) {
+            result = DIRSTRDUP(sidstring);
+            LocalFree(sidstring);
+          }
+        }
+#endif
       }
     }
     free(secdes);
   }
-  //GROUP_SECURITY_INFORMATION
+  /////TO DO: GROUP_SECURITY_INFORMATION
+  /////TO DO: query remote server to look up users on network drive - to get volume information about path, see GetVolumeNameForVolumeMountPoint()
 #else
   struct stat fileinfo;
   if (stat(entry->fullpath, &fileinfo) == 0) {
