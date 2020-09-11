@@ -241,11 +241,18 @@ DLL_EXPORT_DIRTRAV const wchar_t* dirtravw_prop_get_relative_path (dirtravw_entr
 
 /*! \brief get owner name
  * \param  entry                 system properties of directory entry
- * \return name of owner (the caller must call free()) or NULL on error
+ * \return name of owner (the caller must call dirtravw_free()) or NULL on error
  * \sa     dirtravw_entry
  * \sa     dirtravw_traverse_directory()
+ * \sa     dirtravw_free()
  */
 DLL_EXPORT_DIRTRAV wchar_t* dirtravw_prop_get_owner (dirtravw_entry entry);
+
+/*! \brief release memory allocated by this library
+ * \param  data                  pointer to memory allocated by other functions in this library
+ * \sa     dirtravw_prop_get_owner()
+ */
+DLL_EXPORT_DIRTRAV void dirtravw_free (void* data);
 
 #ifdef __cplusplus
 }

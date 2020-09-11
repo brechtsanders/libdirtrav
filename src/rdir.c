@@ -47,11 +47,15 @@ const DIRCHAR* time2str (time_t datetime)
 int file_callback (DIRTRAVFN(entry) info)
 {
   struct dirtrav_struct* folderdata = (info->parentinfo)->callbackdata;
+  DIRCHAR* owner;
   //DIRPRINTF(DIRTEXT("%*s%s\n"), (int)(folderdata->level * 2), DIRTEXT(""), DIRTRAVFN(prop_get_path)(info));
   DIRPRINTF(DIRTEXT("%*s%s"), (int)(folderdata->level * 2), DIRTEXT(""), DIRTRAVFN(prop_get_name)(info));
   DIRPRINTF(DIRTEXT("\t%s"), time2str(DIRTRAVFN(prop_get_create_time)(info)));
   DIRPRINTF(DIRTEXT("\t%s"), time2str(DIRTRAVFN(prop_get_modify_time)(info)));
-  DIRPRINTF(DIRTEXT("%16" PRIu64 " bytes\n"), DIRTRAVFN(prop_get_size)(info));
+  DIRPRINTF(DIRTEXT("%16" PRIu64 " bytes\t"), DIRTRAVFN(prop_get_size)(info));
+  owner = DIRTRAVFN(prop_get_owner)(info);
+  DIRPRINTF(DIRTEXT("%s\n"), (owner ? owner : DIRTEXT("-")));
+  DIRTRAVFN(free)(owner);
   return 0;
 }
 

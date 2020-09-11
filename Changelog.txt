@@ -1,3 +1,10 @@
+0.2.9
+
+2020-09-11  Brecht Sanders  https://github.com/brechtsanders/
+
+  * added dirtrav_free() and dirtravw_free() to release memory allocated by dirtrav_prop_get_owner()
+  * added owner column to rdir example
+
 0.2.8
 
 2020-03-22  Brecht Sanders  https://github.com/brechtsanders/
@@ -6,7 +13,7 @@
   * added folderstats tool
   * added Doxygen HTML manual generation
   * added Doxygen and tools to Makefile
-  
+
 0.2.7
 
 2020-03-21  Brecht Sanders  https://github.com/brechtsanders/

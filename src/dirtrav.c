@@ -643,6 +643,11 @@ DLL_EXPORT_DIRTRAV DIRCHAR* DIRTRAVFN(prop_get_owner) (DIRTRAVFN(entry) entry)
   return result;
 }
 
+DLL_EXPORT_DIRTRAV void DIRTRAVFN(free) (void* data)
+{
+  free(data);
+}
+
 #undef DIRTRAV_GENERATE
 #undef DIRTRAV_GENERATE_WIDE
 #undef DIRCHAR
