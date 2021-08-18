@@ -14,6 +14,7 @@
 #else
 #include <sys/types.h>
 #include <pwd.h>
+#include <unistd.h>
 #endif
 
 #if defined(DIRTRAV_GENERATE)
