@@ -476,6 +476,44 @@ DLL_EXPORT_DIRTRAV int DIRTRAVFN(traverse_path_parts) (const DIRCHAR* startpath,
   return status;
 }
 
+int DIRTRAVFN(recursive_delete_file_callback) (DIRTRAVFN(entry) info)
+{
+#ifdef _WIN32
+  if (DIRWINFN(DeleteFile)(info->fullpath))
+#else
+  if (unlink(info->fullpath) = 0)
+#endif
+    return 0;
+  return 1;
+}
+
+int DIRTRAVFN(recursive_delete_folder_callback) (DIRTRAVFN(entry) info)
+{
+#ifdef _WIN32
+  if (DIRWINFN(RemoveDirectory)(info->fullpath))
+#else
+  if (rmdir(info->fullpath) == 0)
+#endif
+    return 0;
+  return 2;
+}
+
+int DIRTRAVFN(recursive_delete) (const DIRCHAR* path)
+{
+  int result;
+  if (!path || !*path)
+    return -2;
+  if ((result = DIRTRAVFN(traverse_directory)(path, DIRTRAVFN(recursive_delete_file_callback), NULL, DIRTRAVFN(recursive_delete_folder_callback), NULL)) == 0) {
+#ifdef _WIN32
+    if (!DIRWINFN(RemoveDirectory)(path))
+#else
+    if (rmdir(path) != 0)
+#endif
+      return -1;
+  }
+  return result;
+}
+
 int DIRTRAVFN(make_full_path_callback) (DIRTRAVFN(entry) info)
 {
 #ifdef _WIN32

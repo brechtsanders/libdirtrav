@@ -125,7 +125,7 @@ DLL_EXPORT_DIRTRAV int dirtravw_traverse_directory (const wchar_t* directory, di
 
 /*! \brief split \p path into folders calling calbacks for each folder part
  * \param  startpath             optional base path to which \p path is relative
- * \param  path                  path to analyse
+ * \param  path                  path to analyse (relative to \p startpath if specified)
  * \param  foldercallbackbefore  optional callback function to be called before processing each folder
  * \param  foldercallbackafter   optional callback function to be called after processing each folder (except when foldercallbackbefore returned non-zero)
  * \param  callbackdata          optional callback data to be passed to callback functions
@@ -136,13 +136,20 @@ DLL_EXPORT_DIRTRAV int dirtravw_traverse_directory (const wchar_t* directory, di
 DLL_EXPORT_DIRTRAV int dirtravw_traverse_path_parts (const wchar_t* startpath, const wchar_t* path, dirtravw_folder_callback_fn foldercallbackbefore, dirtravw_folder_callback_fn foldercallbackafter, void* callbackdata);
 
 /*! \brief create folder structure \p path under \p startpath
- * \param  startpath             optional base path to which path is relative
- * \param  path                  path of folder structure to create under \p startpath
+ * \param  startpath             optional base path to which \p path is relative
+ * \param  path                  path of folder structure to create (relative to \p startpath if specified)
  * \param  mode                  file permission bits to use when creating folders (not used on Windows)
  * \return 0
  * \sa     dirtravw_folder_callback_fn
  */
 DLL_EXPORT_DIRTRAV int dirtravw_make_full_path (const wchar_t* startpath, const wchar_t* path, mode_t mode);
+
+/*! \brief recursively delete \p path and all files and folders it contains
+ * \param  path                  path of folder structure to delete
+ * \return zero on success, non-zero on error
+ * \sa     dirtrav_folder_callback_fn
+ */
+DLL_EXPORT_DIRTRAV int dirtravw_recursive_delete (const wchar_t* path);
 
 /*! \brief get full path of current file or folder
  * \param  entry                 system properties of directory entry

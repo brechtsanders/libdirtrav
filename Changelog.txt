@@ -1,3 +1,9 @@
+0.2.10
+
+2021-08-18  Brecht Sanders  https://github.com/brechtsanders/
+
+  * added dirtrav_recursive_delete() and dirtravw_recursive_delete()
+
 0.2.9
 
 2020-09-11  Brecht Sanders  https://github.com/brechtsanders/

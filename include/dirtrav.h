@@ -123,7 +123,7 @@ DLL_EXPORT_DIRTRAV int dirtrav_traverse_directory (const char* directory, dirtra
 
 /*! \brief split \p path into folders calling calbacks for each folder part
  * \param  startpath             optional base path to which \p path is relative
- * \param  path                  path to analyse
+ * \param  path                  path to analyse (relative to \p startpath if specified)
  * \param  foldercallbackbefore  optional callback function to be called before processing each folder
  * \param  foldercallbackafter   optional callback function to be called after processing each folder (except when foldercallbackbefore returned non-zero)
  * \param  callbackdata          optional callback data to be passed to callback functions
@@ -134,13 +134,20 @@ DLL_EXPORT_DIRTRAV int dirtrav_traverse_directory (const char* directory, dirtra
 DLL_EXPORT_DIRTRAV int dirtrav_traverse_path_parts (const char* startpath, const char* path, dirtrav_folder_callback_fn foldercallbackbefore, dirtrav_folder_callback_fn foldercallbackafter, void* callbackdata);
 
 /*! \brief create folder structure \p path under \p startpath
- * \param  startpath             optional base path to which path is relative
- * \param  path                  path of folder structure to create under \p startpath
+ * \param  startpath             optional base path to which \p path is relative
+ * \param  path                  path of folder structure to create (relative to \p startpath if specified)
  * \param  mode                  file permission bits to use when creating folders (not used on Windows)
  * \return 0
  * \sa     dirtrav_folder_callback_fn
  */
 DLL_EXPORT_DIRTRAV int dirtrav_make_full_path (const char* startpath, const char* path, mode_t mode);
+
+/*! \brief recursively delete \p path and all files and folders it contains
+ * \param  path                  path of folder structure to delete
+ * \return zero on success, non-zero on error
+ * \sa     dirtrav_folder_callback_fn
+ */
+DLL_EXPORT_DIRTRAV int dirtrav_recursive_delete (const char* path);
 
 /*! \brief get full path of current file or folder
  * \param  entry                 system properties of directory entry
