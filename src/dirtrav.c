@@ -482,7 +482,7 @@ int DIRTRAVFN(recursive_delete_file_callback) (DIRTRAVFN(entry) info)
 #ifdef _WIN32
   if (DIRWINFN(DeleteFile)(info->fullpath))
 #else
-  if (unlink(info->fullpath) = 0)
+  if (unlink(info->fullpath) == 0)
 #endif
     return 0;
   return 1;
