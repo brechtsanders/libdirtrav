@@ -480,39 +480,40 @@ DLL_EXPORT_DIRTRAV int DIRTRAVFN(traverse_path_parts) (const DIRCHAR* startpath,
 int DIRTRAVFN(recursive_delete_file_callback) (DIRTRAVFN(entry) info)
 {
 #ifdef _WIN32
-  if (DIRWINFN(DeleteFile)(info->fullpath))
+  if (!DIRWINFN(DeleteFile)(info->fullpath))
 #else
-  if (unlink(info->fullpath) == 0)
+  if (unlink(info->fullpath) != 0)
 #endif
-    return 0;
-  return 1;
+    *((int*)info->callbackdata) |= 1;
+  return 0;
 }
 
 int DIRTRAVFN(recursive_delete_folder_callback) (DIRTRAVFN(entry) info)
 {
 #ifdef _WIN32
-  if (DIRWINFN(RemoveDirectory)(info->fullpath))
+  if (!DIRWINFN(RemoveDirectory)(info->fullpath))
 #else
-  if (rmdir(info->fullpath) == 0)
+  if (rmdir(info->fullpath) != 0)
 #endif
-    return 0;
-  return 2;
+    *((int*)info->callbackdata) |= 2;
+  return 0;
 }
 
 int DIRTRAVFN(recursive_delete) (const DIRCHAR* path)
 {
-  int result;
+  int status = 0;
   if (!path || !*path)
     return -2;
-  if ((result = DIRTRAVFN(traverse_directory)(path, DIRTRAVFN(recursive_delete_file_callback), NULL, DIRTRAVFN(recursive_delete_folder_callback), NULL)) == 0) {
+  DIRTRAVFN(traverse_directory)(path, DIRTRAVFN(recursive_delete_file_callback), NULL, DIRTRAVFN(recursive_delete_folder_callback), (void*)&status);
+  if (status != 0)
+    return status;
 #ifdef _WIN32
-    if (!DIRWINFN(RemoveDirectory)(path))
+  if (!DIRWINFN(RemoveDirectory)(path))
 #else
-    if (rmdir(path) != 0)
+  if (rmdir(path) != 0)
 #endif
-      return -1;
-  }
-  return result;
+    return (2 | 4);
+  return 0;
 }
 
 int DIRTRAVFN(make_full_path_callback) (DIRTRAVFN(entry) info)

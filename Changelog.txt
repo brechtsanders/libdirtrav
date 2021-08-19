@@ -1,4 +1,14 @@
+0.2.12
+
+2021-08-19  Brecht Sanders  https://github.com/brechtsanders/
+
+  * fix dirtrav_recursive_delete() and dirtravw_recursive_delete() to delete as much as possible on failure
+
 0.2.11
+
+2021-08-18  Brecht Sanders  https://github.com/brechtsanders/
+
+  * fix build for non-Windows operating systems
 
 0.2.10
 
