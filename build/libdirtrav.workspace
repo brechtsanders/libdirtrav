@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_workspace_file>
-	<Workspace title="Workspace">
+	<Workspace title="libdirtrav">
 		<Project filename="libdirtrav_static.cbp" />
 		<Project filename="libdirtrav_shared.cbp" />
 		<Project filename="libdirtravw_static.cbp" />
@@ -15,6 +15,9 @@
 		<Project filename="test2.cbp">
 			<Depends filename="libdirtrav_static.cbp" />
 			<Depends filename="libdirtravw_static.cbp" />
+		</Project>
+		<Project filename="test3.cbp">
+			<Depends filename="libdirtrav_static.cbp" />
 		</Project>
 		<Project filename="tree.cbp">
 			<Depends filename="libdirtrav_static.cbp" />

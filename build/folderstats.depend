@@ -1,0 +1,53 @@
+# depslib dependency file v1.0
+1584806664 source:\\server\users\brecht\sources\cpp\libdirtrav\src\folderstats.c
+	<stdio.h>
+	<stdlib.h>
+	<stdint.h>
+	<string.h>
+	<inttypes.h>
+	<time.h>
+	<ctype.h>
+	<unistd.h>
+	<fcntl.h>
+	"dirtravw.h"
+	<windows.h>
+	<shellapi.h>
+	"dirtrav.h"
+
+1584806708 \\server\users\brecht\sources\cpp\libdirtrav\include\dirtravw.h
+	<stdlib.h>
+	<stdint.h>
+	<sys/stat.h>
+	<wchar.h>
+
+1584806608 \\server\users\brecht\sources\cpp\libdirtrav\include\dirtrav.h
+	<stdlib.h>
+	<stdint.h>
+	<sys/stat.h>
+
+1584810264 source:z:\libdirtrav\src\folderstats.c
+	<stdio.h>
+	<stdlib.h>
+	<stdint.h>
+	<string.h>
+	<inttypes.h>
+	<time.h>
+	<ctype.h>
+	<unistd.h>
+	<fcntl.h>
+	"dirtravw.h"
+	<windows.h>
+	<shellapi.h>
+	"dirtrav.h"
+
+1629308544 z:\libdirtrav\include\dirtravw.h
+	<stdlib.h>
+	<stdint.h>
+	<sys/stat.h>
+	<wchar.h>
+
+1629308094 z:\libdirtrav\include\dirtrav.h
+	<stdlib.h>
+	<stdint.h>
+	<sys/stat.h>
+

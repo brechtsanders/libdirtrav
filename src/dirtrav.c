@@ -248,7 +248,8 @@ int DIRTRAVFN(iteration) (struct DIRTRAVFN(entry_internal_struct)* parentfolderi
     FindClose(dir);
     free(fullpath);
   } else {
-    status = -1;
+    //unable to get directory contents
+    //status = -1;
   }
   free(searchpath);
 #else
