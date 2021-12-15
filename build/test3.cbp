@@ -92,7 +92,7 @@
 			<Add library="dirtrav" />
 			<Add library="dirtravw" />
 		</Linker>
-		<Unit filename="test3.c">
+		<Unit filename="../src/test3.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Extensions />
