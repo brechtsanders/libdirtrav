@@ -3,6 +3,7 @@
 2021-12-15  Brecht Sanders  https://github.com/brechtsanders/
 
   * don't abort traversal when errors occur on non-Windows operating systems
+  * Makefile: support building wide library (libdirtravw) on Windows
 
 0.2.14
 

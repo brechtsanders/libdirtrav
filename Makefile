@@ -22,6 +22,8 @@ CFLAGS = $(INCS) -Os
 CPPFLAGS = $(INCS) -Os
 STATIC_CFLAGS = -DDIRTRAV_GENERATE -DBUILD_DIRTRAV_STATIC
 SHARED_CFLAGS = -DDIRTRAV_GENERATE -DBUILD_DIRTRAV_DLL
+WIDE_STATIC_CFLAGS = -DDIRTRAV_GENERATE_WIDE -DBUILD_DIRTRAV_STATIC
+WIDE_SHARED_CFLAGS = -DDIRTRAV_GENERATE_WIDE -DBUILD_DIRTRAV_DLL
 LIBS =
 LDFLAGS =
 ifeq ($(OS),Darwin)
@@ -60,6 +62,14 @@ else
 OS_LINK_FLAGS = -shared -Wl,-soname,$@ $(STRIPFLAG)
 endif
 
+ifeq ($(BUILD_WIDE),)
+STATIC_LIB_WIDE :=
+SHARED_LIB_WIDE :=
+else
+STATIC_LIB_WIDE := $(LIBPREFIX)dirtravw$(LIBEXT)
+SHARED_LIB_WIDE := $(LIBPREFIX)dirtravw$(SOEXT)
+endif
+
 TOOLS_BIN = tree$(BINEXT) rdir$(BINEXT) folderstats$(BINEXT)
 EXAMPLES_BIN = test1$(BINEXT)
 
@@ -79,16 +89,34 @@ all: static-lib shared-lib $(TOOLS_BIN)
 %.shared.o: %.c
 	$(CC) -c -o $@ $< $(SHARED_CFLAGS) $(CFLAGS)
 
-static-lib: $(LIBPREFIX)dirtrav$(LIBEXT)
-
-shared-lib: $(LIBPREFIX)dirtrav$(SOEXT)
-
 $(LIBPREFIX)dirtrav$(LIBEXT): $(libdirtrav_OBJ:%.o=%.static.o)
 	$(AR) cr $@ $^
 
 $(LIBPREFIX)dirtrav$(SOEXT): $(libdirtrav_OBJ:%.o=%.shared.o)
 	$(CC) -o $@ $(OS_LINK_FLAGS) $^ $(libdirtrav_SHARED_LDFLAGS) $(libdirtrav_LDFLAGS) $(LDFLAGS) $(LIBS)
-	
+
+
+ifneq ($(BUILD_WIDE),)
+
+%.wide-static.o: %.c
+	$(CC) -c -o $@ $< $(WIDE_STATIC_CFLAGS) $(CFLAGS) 
+
+%.wide-shared.o: %.c
+	$(CC) -c -o $@ $< $(WIDE_SHARED_CFLAGS) $(CFLAGS)
+
+$(LIBPREFIX)dirtravw$(LIBEXT): $(libdirtrav_OBJ:%.o=%.wide-static.o)
+	$(AR) cr $@ $^
+
+$(LIBPREFIX)dirtravw$(SOEXT): $(libdirtrav_OBJ:%.o=%.wide-shared.o)
+	$(CC) -o $@ $(OS_LINK_FLAGS) $^ $(libdirtrav_SHARED_LDFLAGS) $(libdirtrav_LDFLAGS) $(LDFLAGS) $(LIBS)
+
+endif
+
+
+static-lib: $(LIBPREFIX)dirtrav$(LIBEXT) $(STATIC_LIB_WIDE)
+
+shared-lib: $(LIBPREFIX)dirtrav$(SOEXT) $(SHARED_LIB_WIDE)
+
 #tree.o: src/tree.c
 #	$(CC) -c -o $@ $< $(CFLAGS) 
 
@@ -148,7 +176,7 @@ package: version
 
 .PHONY: package
 binarypackage: version
-	$(MAKE) PREFIX=binpkg_$(OSALIAS)_temp install DIRTRAV_GENERATE_WIDE=1
+	$(MAKE) PREFIX=binpkg_$(OSALIAS)_temp install BUILD_WIDE=1
 ifneq ($(OS),Windows_NT)
 	tar cfJ "libdirtrav-$(shell cat version)-$(OSALIAS).tar.xz" --transform="s?^binpkg_$(OSALIAS)_temp/??" $(COMMON_PACKAGE_FILES) binpkg_$(OSALIAS)_temp/*
 else
