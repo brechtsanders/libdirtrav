@@ -24,7 +24,7 @@ jobs:
             name: "Windows MinGW", artifact: "Windows-MinGW.tar.bz2",
             os: windows-latest,
             cc: "gcc", cxx: "g++",
-            cflags: "BUILD_WIDE=1"
+            makeflags: "BUILD_WIDE=1"
           }
         - {
             name: "Ubuntu GCC", artifact: "Linux.tar.bz2",
@@ -40,7 +40,7 @@ jobs:
     - uses: actions/checkout@v1
     - name: Compile, install, package
       run: |
-        make install PREFIX=build_result DOXYGEN= CC=${{ matrix.config.cc }} ${{ matrix.config.cflags }}
+        make install PREFIX=build_result DOXYGEN= CC=${{ matrix.config.cc }} ${{ matrix.config.makeflags }}
         tar cfj ./${{ matrix.config.artifact }} --strip-components=1 build_result
     - name: Pack
       run: |
