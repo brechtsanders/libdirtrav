@@ -23,7 +23,7 @@ jobs:
         - {
             name: "Windows MinGW", artifact: "Windows-MinGW.tar.bz2",
             os: windows-latest,
-            cc: "gcc", cxx: "g++"
+            cc: "gcc", cxx: "g++",
             cflags: "BUILD_WIDE=1"
           }
         - {
