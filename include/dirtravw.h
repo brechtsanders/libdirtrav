@@ -120,8 +120,18 @@ typedef int (*dirtravw_folder_callback_fn) (dirtravw_entry info);
  * \param  callbackdata          optional callback data to be passed to callback functions
  * \return 0 if the entire tree was traversed or the result of the callback function that caused traversal to stop
  * \sa     dirtravw_entry
+ * \sa     dirtravw_iterate_roots()
  */
 DLL_EXPORT_DIRTRAV int dirtravw_traverse_directory (const wchar_t* directory, dirtravw_file_callback_fn filecallback, dirtravw_folder_callback_fn foldercallbackbefore, dirtravw_folder_callback_fn foldercallbackafter, void* callbackdata);
+
+/*! \brief iterate root paths (root paths of drives on Windows, / on other platforms) calling calback for each entry
+ * \param  rootcallback          callback function to be called for each root path
+ * \param  callbackdata          optional callback data to be passed to callback functions
+ * \return 0 if all root paths were processed or the result of the callback function that caused traversal to stop
+ * \sa     dirtravw_entry
+ * \sa     dirtravw_traverse_directory()
+ */
+DLL_EXPORT_DIRTRAV int dirtravw_iterate_roots (dirtravw_folder_callback_fn rootcallback, void* callbackdata);
 
 /*! \brief split \p path into folders calling calbacks for each folder part
  * \param  startpath             optional base path to which \p path is relative

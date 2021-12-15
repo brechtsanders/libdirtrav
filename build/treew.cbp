@@ -96,7 +96,7 @@
 		</Compiler>
 		<Linker>
 			<Add option="-static" />
-			<Add library="libdirtravw" />
+			<Add library="dirtravw" />
 		</Linker>
 		<Unit filename="../src/tree.c">
 			<Option compilerVar="CC" />

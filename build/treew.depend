@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1532972706 source:z:\libdirtrav\src\tree.c
+1532969106 source:z:\libdirtrav\src\tree.c
 	<stdio.h>
 	<stdlib.h>
 	<stdint.h>
@@ -12,13 +12,13 @@
 	<shellapi.h>
 	<dirtrav.h>
 
-1629308544 z:\libdirtrav\include\dirtravw.h
+1639553467 z:\libdirtrav\include\dirtravw.h
 	<stdlib.h>
 	<stdint.h>
 	<sys/stat.h>
 	<wchar.h>
 
-1629308094 z:\libdirtrav\include\dirtrav.h
+1639553467 z:\libdirtrav\include\dirtrav.h
 	<stdlib.h>
 	<stdint.h>
 	<sys/stat.h>

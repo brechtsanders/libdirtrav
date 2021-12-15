@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1639558021 source:z:\libdirtrav\build\test3.c
+1639560536 source:z:\libdirtrav\build\test3.c
 	<stdlib.h>
 	<stdio.h>
 	<stdint.h>
@@ -7,18 +7,16 @@
 	<string.h>
 	<windows.h>
 	"dirtravw.h"
-	<windows.h>
-	<shellapi.h>
 	"dirtrav.h"
-
-1639554823 z:\libdirtrav\include\dirtrav.h
-	<stdlib.h>
-	<stdint.h>
-	<sys/stat.h>
 
 1639557419 z:\libdirtrav\include\dirtravw.h
 	<stdlib.h>
 	<stdint.h>
 	<sys/stat.h>
 	<wchar.h>
+
+1639554823 z:\libdirtrav\include\dirtrav.h
+	<stdlib.h>
+	<stdint.h>
+	<sys/stat.h>
 

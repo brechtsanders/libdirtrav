@@ -95,7 +95,7 @@
 		</Compiler>
 		<Linker>
 			<Add option="-static" />
-			<Add library="libdirtrav" />
+			<Add library="dirtrav" />
 		</Linker>
 		<Unit filename="../src/rdir.c">
 			<Option compilerVar="CC" />

@@ -1,3 +1,9 @@
+0.2.14
+
+2021-12-15  Brecht Sanders  https://github.com/brechtsanders/
+
+  * added dirtrav_iterate_roots() and dirtravw_iterate_roots()
+
 0.2.13
 
 2021-12-14  Brecht Sanders  https://github.com/brechtsanders/

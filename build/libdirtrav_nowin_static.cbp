@@ -8,7 +8,7 @@
 		<Option extended_obj_names="1" />
 		<Build>
 			<Target title="Debug">
-				<Option output="bin/Debug/dirtrav_nowin" prefix_auto="1" extension_auto="1" />
+				<Option output="bin/Debug/libdirtrav_nowin" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="" />
 				<Option object_output="obj/Debug/" />
 				<Option type="2" />
@@ -21,7 +21,7 @@
 				</Compiler>
 			</Target>
 			<Target title="Release">
-				<Option output="bin/Release/dirtrav_nowin" prefix_auto="1" extension_auto="1" />
+				<Option output="bin/Release/libdirtrav_nowin" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="" />
 				<Option object_output="obj/Release/" />
 				<Option type="2" />
@@ -37,7 +37,7 @@
 				</Linker>
 			</Target>
 			<Target title="Debug32">
-				<Option output="bin/Debug32/dirtrav_nowin" prefix_auto="1" extension_auto="1" />
+				<Option output="bin/Debug32/libdirtrav_nowin" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="" />
 				<Option object_output="obj/Debug32/" />
 				<Option type="2" />
@@ -50,7 +50,7 @@
 				</Compiler>
 			</Target>
 			<Target title="Release32">
-				<Option output="bin/Release32/dirtrav_nowin" prefix_auto="1" extension_auto="1" />
+				<Option output="bin/Release32/libdirtrav_nowin" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="" />
 				<Option object_output="obj/Release32/" />
 				<Option type="2" />
@@ -66,7 +66,7 @@
 				</Linker>
 			</Target>
 			<Target title="Debug64">
-				<Option output="bin/Debug64/dirtrav_nowin" prefix_auto="1" extension_auto="1" />
+				<Option output="bin/Debug64/libdirtrav_nowin" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="" />
 				<Option object_output="obj/Debug64/" />
 				<Option type="2" />
@@ -79,7 +79,7 @@
 				</Compiler>
 			</Target>
 			<Target title="Release64">
-				<Option output="bin/Release64/dirtrav_nowin" prefix_auto="1" extension_auto="1" />
+				<Option output="bin/Release64/libdirtrav_nowin" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="" />
 				<Option object_output="obj/Release64/" />
 				<Option type="2" />

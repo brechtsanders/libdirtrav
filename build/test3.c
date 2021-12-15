@@ -6,53 +6,42 @@
 #ifdef _WIN32
 #include <windows.h>
 #endif
-#include <dirtrav.h>
 
-int file_found (dirtrav_entry info)
+#ifdef WIDE_DIRTRAV
+# include "dirtravw.h"
+# define DIRCHAR wchar_t
+# define DIRPRINTF wprintf
+# define DIRPRINTF_S "ls"
+# define DIRTEXT_(s) L##s
+# define DIRTEXT(s) DIRTEXT_(s)
+# define DIRTRAVFN(fn) dirtravw_##fn
+#else
+# include "dirtrav.h"
+# define DIRCHAR char
+# define DIRPRINTF printf
+# define DIRPRINTF_S "s"
+# define DIRTEXT(s) s
+# define DIRTRAVFN(fn) dirtrav_##fn
+#endif
+
+int file_found (DIRTRAVFN(entry) info)
 {
+  //DIRPRINTF(DIRTEXT("%s\n"), info->fullpath);/////
   (*(uint64_t*)info->callbackdata)++;
-  //printf("%s\n", info->fullpath);
   return 0;
+}
+
+int drive_found (DIRTRAVFN(entry) info)
+{
+  //DIRPRINTF(DIRTEXT("%" DIRPRINTF_S  "\n"), info->fullpath);/////
+  return DIRTRAVFN(traverse_directory)(info->fullpath, file_found, NULL, NULL, info->callbackdata);
 }
 
 int main()
 {
   uint64_t count = 0;
-  //try to get elevated access
-  dirtrav_elevate_access();
-#ifdef _WIN32
-  char* p;
-  char* drivelist;
-  DWORD drivelistlen;
-  UINT drivetype;
-  if ((drivelistlen = GetLogicalDriveStringsA(0, NULL)) == 0) {
-    fprintf(stderr, "Error getting available drive letters\n");
-    return 1;
-  }
-  if ((drivelist = (char*)malloc(drivelistlen)) == NULL) {
-    fprintf(stderr, "Memory allocation error\n");
-    return 2;
-  }
-  if ((drivelistlen = GetLogicalDriveStringsA(drivelistlen, drivelist)) == 0) {
-    fprintf(stderr, "Error getting available drive letters\n");
-    return 3;
-  }
-  p = drivelist;
-  while (*p) {
-    drivetype = GetDriveTypeA(p);
-    if (drivetype != DRIVE_NO_ROOT_DIR && drivetype != DRIVE_REMOTE) {
-      printf("%s\n", p);
-      printf("  type: %i\n", (int)drivetype);
-      dirtrav_traverse_directory(p, file_found, NULL, NULL, &count);
-    }
-    while (*p)
-      p++;
-    p++;
-  }
-  free(drivelist);
-#else
-  dirtrav_traverse_directory("/", file_found, NULL, NULL, &count);
-#endif
-  printf("Files found: %" PRIu64 "\n", count);
+  DIRTRAVFN(elevate_access)();
+  DIRTRAVFN(iterate_roots)(drive_found, &count);
+  DIRPRINTF(DIRTEXT("Files found: %" PRIu64 "\n"), count);
   return 0;
 }

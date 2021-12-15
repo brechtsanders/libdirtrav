@@ -89,15 +89,12 @@
 		</Compiler>
 		<Linker>
 			<Add option="-static" />
-			<Add library="libdirtrav" />
+			<Add library="dirtrav" />
+			<Add library="dirtravw" />
 		</Linker>
 		<Unit filename="test3.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Extensions>
-			<code_completion />
-			<envvars />
-			<debugger />
-		</Extensions>
+		<Extensions />
 	</Project>
 </CodeBlocks_project_file>

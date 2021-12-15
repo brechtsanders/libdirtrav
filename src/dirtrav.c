@@ -383,6 +383,47 @@ int DIRTRAVFN(traverse_fullpath_parts_from_position) (const DIRCHAR* fullpath, s
   return 0;
 }
 
+DLL_EXPORT_DIRTRAV int DIRTRAVFN(iterate_roots) (DIRTRAVFN(folder_callback_fn) rootcallback, void* callbackdata)
+{
+  struct DIRTRAVFN(entry_struct) info;
+  //initialize directory information structure
+  info.fullpath = NULL;
+  info.filename = NULL;
+  info.parentpath = NULL;
+  info.parentinfo = NULL;
+  info.callbackdata = callbackdata;
+  info.folderlocaldata = NULL;
+#ifdef _WIN32
+  const DIRCHAR* p;
+  DIRCHAR* drivelist;
+  DWORD drivelistlen;
+  UINT drivetype;
+  int status = 0;
+  if ((drivelistlen = DIRWINFN(GetLogicalDriveStrings)(0, NULL)) == 0)
+    return 1;
+  if ((drivelist = (DIRCHAR*)malloc(drivelistlen * sizeof(DIRCHAR))) == NULL)
+    return 2;
+  if ((drivelistlen = DIRWINFN(GetLogicalDriveStrings)(drivelistlen, drivelist)) == 0)
+    return 3;
+  p = drivelist;
+  while (status == 0 && *p) {
+    drivetype = DIRWINFN(GetDriveType)(p);
+    if (drivetype != DRIVE_NO_ROOT_DIR && drivetype != DRIVE_REMOTE) {
+      info.fullpath = p;
+      status = (*rootcallback)(&info);
+    }
+    while (*p)
+      p++;
+    p++;
+  }
+  free(drivelist);
+  return status;
+#else
+  info.fullpath = "/";
+  return (*rootcallback)(&info);
+#endif
+}
+
 DLL_EXPORT_DIRTRAV int DIRTRAVFN(traverse_path_parts) (const DIRCHAR* startpath, const DIRCHAR* path, DIRTRAVFN(folder_callback_fn) foldercallbackbefore, DIRTRAVFN(folder_callback_fn) foldercallbackafter, void* callbackdata)
 {
   size_t i;
@@ -439,7 +480,7 @@ DLL_EXPORT_DIRTRAV int DIRTRAVFN(traverse_path_parts) (const DIRCHAR* startpath,
       i++;
     }
   }
-  //strip . and  .. entries from path
+  //strip . and .. entries from path
   if (fullpath[0] == '.' && fullpath[1] == PATH_SEPARATOR) {
     memmove(fullpath, fullpath + 2, (DIRSTRLEN(fullpath + 2) + 1) * sizeof(DIRCHAR));
     if (pos >= 2)

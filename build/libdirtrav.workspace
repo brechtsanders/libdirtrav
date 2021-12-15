@@ -19,6 +19,9 @@
 		<Project filename="test3.cbp">
 			<Depends filename="libdirtrav_static.cbp" />
 		</Project>
+		<Project filename="test3w.cbp">
+			<Depends filename="libdirtravw_static.cbp" />
+		</Project>
 		<Project filename="tree.cbp">
 			<Depends filename="libdirtrav_static.cbp" />
 		</Project>
