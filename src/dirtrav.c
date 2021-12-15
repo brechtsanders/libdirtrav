@@ -305,7 +305,8 @@ int DIRTRAVFN(iteration) (struct DIRTRAVFN(entry_internal_struct)* parentfolderi
     }
     DIR_WFN(closedir)(dir);
   } else {
-    status = -1;
+    //unable to get directory contents
+    //status = -1;
   }
 #endif
   return status;
