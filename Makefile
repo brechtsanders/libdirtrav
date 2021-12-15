@@ -62,6 +62,9 @@ else
 OS_LINK_FLAGS = -shared -Wl,-soname,$@ $(STRIPFLAG)
 endif
 
+ifneq ($(OS),Windows_NT)
+BUILD_WIDE :=
+endif
 ifeq ($(BUILD_WIDE),)
 STATIC_LIB_WIDE :=
 SHARED_LIB_WIDE :=
