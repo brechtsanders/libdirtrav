@@ -1,3 +1,10 @@
+0.2.16
+
+2021-12-21  Brecht Sanders  https://github.com/brechtsanders/
+
+  * fix FindFirstFileEx() issues on Windows XP by falling back to FindFirstFileEx()
+  * on Windows don't include removable drives in dirtrav_iterate_roots()
+
 0.2.15
 
 2021-12-15  Brecht Sanders  https://github.com/brechtsanders/

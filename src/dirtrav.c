@@ -7,7 +7,10 @@
 #define LOOKUP_SID
 #ifdef _WIN32
 #ifdef LOOKUP_SID
+#if !defined(WINVER) || WINVER < 0x0500
+#undef WINVER
 #define WINVER 0x0500
+#endif
 #include <windows.h>
 #include <sddl.h>
 #endif
@@ -199,10 +202,13 @@ int DIRTRAVFN(iteration) (struct DIRTRAVFN(entry_internal_struct)* parentfolderi
   info.external.callbackdata = callbackdata;
   info.toppath = parentfolderinfo->toppath;
 #ifdef FIND_FIRST_EX_LARGE_FETCH
-  if ((dir = DIRWINFN(FindFirstFileEx)(searchpath, FindExInfoBasic, &info.direntry, FindExSearchNameMatch, NULL, FIND_FIRST_EX_CASE_SENSITIVE | FIND_FIRST_EX_LARGE_FETCH)) != INVALID_HANDLE_VALUE) {
+  dir = DIRWINFN(FindFirstFileEx)(searchpath, FindExInfoBasic, &info.direntry, FindExSearchNameMatch, NULL, FIND_FIRST_EX_CASE_SENSITIVE | FIND_FIRST_EX_LARGE_FETCH);
+  if (dir == INVALID_HANDLE_VALUE /*&& GetLastError() == ERROR_NOT_SUPPORTED*/)
+    dir = DIRWINFN(FindFirstFile)(searchpath, &info.direntry);
 #else
-  if ((dir = DIRWINFN(FindFirstFile)(searchpath, &info.direntry)) != INVALID_HANDLE_VALUE) {
+  dir = DIRWINFN(FindFirstFile)(searchpath, &info.direntry);
 #endif
+  if (dir != INVALID_HANDLE_VALUE) {
     //process files and directories
     fullpathlen = directorylen + 1;
     fullpath = (DIRCHAR*)malloc(fullpathlen * sizeof(DIRCHAR));
@@ -409,7 +415,7 @@ DLL_EXPORT_DIRTRAV int DIRTRAVFN(iterate_roots) (DIRTRAVFN(folder_callback_fn) r
   p = drivelist;
   while (status == 0 && *p) {
     drivetype = DIRWINFN(GetDriveType)(p);
-    if (drivetype != DRIVE_NO_ROOT_DIR && drivetype != DRIVE_REMOTE) {
+    if (drivetype != DRIVE_NO_ROOT_DIR && drivetype != DRIVE_REMOTE && drivetype != DRIVE_REMOVABLE && drivetype != DRIVE_CDROM) {
       info.fullpath = p;
       status = (*rootcallback)(&info);
     }
