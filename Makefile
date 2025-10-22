@@ -160,9 +160,9 @@ else
 endif
 	$(CP) $(TOOLS_BIN) $(PREFIX)/bin/
 ifdef DOXYGEN
-	$(CPDIR) doc/man $(PREFIX)/
-	$(MKDIR) $(PREFIX)/share/libdirtrav
-	$(CPDIR) doc/html $(PREFIX)/share/libdirtrav/
+	$(CPDIR) doc/man/* $(PREFIX)/man/
+	$(MKDIR) $(PREFIX)/share/libdirtrav/html
+	$(CPDIR) doc/html/ $(PREFIX)/share/libdirtrav/html/
 endif
 
 .PHONY: version

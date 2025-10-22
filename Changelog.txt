@@ -1,3 +1,9 @@
+0.2.17
+
+2025-10-22  Brecht Sanders  https://github.com/brechtsanders/
+
+  * fix determining file owner (previously only the SID was returned)
+
 0.2.16
 
 2021-12-21  Brecht Sanders  https://github.com/brechtsanders/

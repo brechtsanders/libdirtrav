@@ -686,13 +686,15 @@ DLL_EXPORT_DIRTRAV DIRCHAR* DIRTRAVFN(prop_get_owner) (DIRTRAVFN(entry) entry)
     secdes = (SECURITY_DESCRIPTOR*)malloc(len);
     if (DIRWINFN(GetFileSecurity)(entry->fullpath, OWNER_SECURITY_INFORMATION, secdes, len, &len)) {
       if (GetSecurityDescriptorOwner(secdes, &ownersid, &ownderdefaulted)) {
+#ifdef LOOKUP_SID
         SID_NAME_USE accounttype;
         DIRCHAR* name;
         DIRCHAR* domain;
         DWORD domainlen;
         len = 0;
         domainlen = 0;
-        if (DIRWINFN(LookupAccountSid)(NULL, ownersid, NULL, &len, NULL, &domainlen, &accounttype) && len > 0 && domainlen > 0) {
+        DIRWINFN(LookupAccountSid)(NULL, ownersid, NULL, &len, NULL, &domainlen, &accounttype);
+        if (len > 0 && domainlen > 0) {
           name = (DIRCHAR*)malloc(len * sizeof(DIRCHAR));
           domain = (DIRCHAR*)malloc(domainlen * sizeof(DIRCHAR));
           if (DIRWINFN(LookupAccountSid)(NULL, ownersid, name, &len, domain, &domainlen, &accounttype)) {
@@ -704,15 +706,16 @@ DLL_EXPORT_DIRTRAV DIRCHAR* DIRTRAVFN(prop_get_owner) (DIRTRAVFN(entry) entry)
           free(name);
           free(domain);
         }
-#ifdef LOOKUP_SID
         if (!result) {
+#else
+        {
+#endif
           DIRCHAR* sidstring;
           if (DIRWINFN(ConvertSidToStringSid)(ownersid, &sidstring)) {
             result = DIRSTRDUP(sidstring);
             LocalFree(sidstring);
           }
         }
-#endif
       }
     }
     free(secdes);
