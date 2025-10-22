@@ -46,7 +46,7 @@ jobs:
       run: |
         tar cfj ./${{ matrix.config.artifact }} --strip-components=1 build_result
     - name: Upload
-      uses: actions/upload-artifact@v1
+      uses: actions/upload-artifact@v4
       with:
         path: ./${{ matrix.config.artifact }}
         name: ${{ matrix.config.artifact }}

@@ -1,8 +1,14 @@
+0.2.18
+
+2025-10-22  Brecht Sanders  https://github.com/brechtsanders/
+
+  * fix use of obsolete actions/upload-artifact@v1 in GitHub Actions
+
 0.2.17
 
 2025-10-22  Brecht Sanders  https://github.com/brechtsanders/
 
-  * fix determining file owner (previously only the SID was returned)
+  * fix determining file owner on Windows (previously only the SID was returned)
 
 0.2.16
 
