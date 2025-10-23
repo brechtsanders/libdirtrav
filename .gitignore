@@ -1,6 +1,9 @@
 build/bin/
 build/obj/
+doc/man/
+doc/html/
 version
 *.layout
 *.URL
 *.7z
+*.zip
