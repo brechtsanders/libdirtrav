@@ -4,6 +4,7 @@
 #include <dirent.h>
 #include <sys/stat.h>
 //#include <unistd.h>
+#include <stdio.h>
 #ifdef _WIN32
 /*
 #if !defined(WINVER) || WINVER < 0x0500
