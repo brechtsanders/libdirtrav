@@ -4,16 +4,15 @@
 #include <dirent.h>
 #include <sys/stat.h>
 //#include <unistd.h>
-#define LOOKUP_SID
 #ifdef _WIN32
-#ifdef LOOKUP_SID
+/*
 #if !defined(WINVER) || WINVER < 0x0500
 #undef WINVER
 #define WINVER 0x0500
 #endif
+*/
 #include <windows.h>
 #include <sddl.h>
-#endif
 #else
 #include <sys/types.h>
 #include <pwd.h>
@@ -673,63 +672,178 @@ DLL_EXPORT_DIRTRAV const DIRCHAR* DIRTRAVFN(prop_get_relative_path) (DIRTRAVFN(e
   return entry->fullpath + toppathlen;
 }
 
+DLL_EXPORT_DIRTRAV DIRCHAR* DIRTRAVFN(prop_get_owner_id) (DIRTRAVFN(entry) entry)
+{
+  DIRCHAR* result = NULL;
+#ifdef _WIN32
+#define PREALLOCATE_SECURITY_DESCRIPTOR 48
+  SECURITY_DESCRIPTOR* secdes;
+  PSID ownersid;
+  BOOL ownderdefaulted;
+  DWORD len = PREALLOCATE_SECURITY_DESCRIPTOR;
+  if (!(secdes = (SECURITY_DESCRIPTOR*)malloc(len)))
+    return NULL;
+  if (DIRWINFN(GetFileSecurity)(entry->fullpath, OWNER_SECURITY_INFORMATION, secdes, len, &len) == 0) {
+    if (len <= PREALLOCATE_SECURITY_DESCRIPTOR) {
+      //failure other than insufficient buffer
+      free(secdes);
+      return NULL;
+    } else {
+      if (!(secdes = (SECURITY_DESCRIPTOR*)realloc(secdes, len))) {
+        //memory allocation error
+        return NULL;
+      }
+      if (DIRWINFN(GetFileSecurity)(entry->fullpath, OWNER_SECURITY_INFORMATION, secdes, len, &len) == 0) {
+        //unable to get file security information
+        free(secdes);
+        return NULL;
+      }
+    }
+  }
+  if (GetSecurityDescriptorOwner(secdes, &ownersid, &ownderdefaulted)) {
+    DIRCHAR* sidstring;
+    if (DIRWINFN(ConvertSidToStringSid)(ownersid, &sidstring)) {
+      result = DIRSTRDUP(sidstring);
+      LocalFree(sidstring);
+    }
+  }
+  free(secdes);
+  /////TO DO: GROUP_SECURITY_INFORMATION
+  /////TO DO: query remote server to look up users on network drive - to get volume information about path, see GetVolumeNameForVolumeMountPoint()
+#else
+  char* buf;
+  int buflen;
+  struct stat fileinfo;
+  if (stat(entry->fullpath, &fileinfo) == 0) {
+    buflen = snprintf(NULL, 0, "%llu", (long long)fileinfo.st_uid);
+    if ((result = (char*)malloc(buflen + 1)) == NULL)
+      return NULL;
+    sprintf(bug, "%llu", (long long)fileinfo.st_uid)
+  }
+#endif
+  return result;
+}
+
+#ifdef _WIN32
+static inline DIRCHAR* sid_to_string (PSID sid)
+{
+  DIRCHAR* result;
+  SID_NAME_USE accounttype;
+  DIRCHAR* name;
+  DIRCHAR* domain;
+  DWORD len = 0;
+  DWORD domainlen = 0;
+  DIRWINFN(LookupAccountSid)(NULL, sid, NULL, &len, NULL, &domainlen, &accounttype);
+  if (len > 0 && domainlen > 0) {
+    if (!(name = (DIRCHAR*)malloc(len * sizeof(DIRCHAR)))) {
+      return NULL;
+    }
+    if (!(domain = (DIRCHAR*)malloc(domainlen * sizeof(DIRCHAR)))) {
+      free(name);
+      return NULL;
+    }
+    if (DIRWINFN(LookupAccountSid)(NULL, sid, name, &len, domain, &domainlen, &accounttype)) {
+      if ((result = (DIRCHAR*)malloc((domainlen + len + 2) * sizeof(DIRCHAR))) == NULL) {
+        free(name);
+        free(domain);
+        return NULL;
+      } else {
+        memcpy(result, domain, domainlen * sizeof(DIRCHAR));
+        result[domainlen] = '\\';
+        DIRSTRCPY(result + domainlen + 1, name);
+      }
+    }
+    free(name);
+    free(domain);
+  } else {
+    result = NULL;
+/*
+    DWORD errorcode = GetLastError();
+    DIRCHAR* errormessage;
+    if (DIRWINFN(FormatMessage)(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, errorcode, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (DIRCHAR*)&errormessage, 0, NULL) != 0) {
+      DIRPRINTF(DIRTEXT("Error: %s\n"), errormessage);
+      LocalFree(errormessage);
+    }
+*/
+  }
+  if (!result) {
+    DIRCHAR* sidstring;
+    if (DIRWINFN(ConvertSidToStringSid)(sid, &sidstring)) {
+      result = DIRSTRDUP(sidstring);
+      LocalFree(sidstring);
+    }
+  }
+  return result;
+}
+#else
+static inline DIRCHAR* uid_to_string (uid_t uid)
+{
+  struct passwd* pw;
+  if ((pw = getpwuid(uid)) == NULL)
+    return NULL;
+  return strdup(pw->pw_name);
+  //struct group* gr = getgrgid(fileinfo.st_gid);
+}
+#endif
+
+DLL_EXPORT_DIRTRAV DIRCHAR* DIRTRAVFN(userid_to_name) (DIRCHAR* userid)
+{
+#ifdef _WIN32
+  DIRCHAR* result = NULL;
+  PSID sid;
+  if (DIRWINFN(ConvertStringSidToSid)(userid, &sid) == 0)
+    return NULL;
+  result = sid_to_string(sid);
+  LocalFree(sid);
+  return result;
+#else
+  struct passwd* pw;
+  char* p = userid;
+  long long id = strtoll(userid, &p, 10);
+  if (p == userid || id < 0 || id > (1 << sizeof(pid_t)) - 1)
+    return NULL;
+  return uid_to_string(id);
+#endif
+}
+
 DLL_EXPORT_DIRTRAV DIRCHAR* DIRTRAVFN(prop_get_owner) (DIRTRAVFN(entry) entry)
 {
   DIRCHAR* result = NULL;
 #ifdef _WIN32
+#define PREALLOCATE_SECURITY_DESCRIPTOR 48
   SECURITY_DESCRIPTOR* secdes;
   PSID ownersid;
   BOOL ownderdefaulted;
-  DWORD len = 0;
-  DIRWINFN(GetFileSecurity)(entry->fullpath, OWNER_SECURITY_INFORMATION, NULL, 0, &len);
-  if (len > 0) {
-    secdes = (SECURITY_DESCRIPTOR*)malloc(len);
-    if (DIRWINFN(GetFileSecurity)(entry->fullpath, OWNER_SECURITY_INFORMATION, secdes, len, &len)) {
-      if (GetSecurityDescriptorOwner(secdes, &ownersid, &ownderdefaulted)) {
-#ifdef LOOKUP_SID
-        SID_NAME_USE accounttype;
-        DIRCHAR* name;
-        DIRCHAR* domain;
-        DWORD domainlen;
-        len = 0;
-        domainlen = 0;
-        DIRWINFN(LookupAccountSid)(NULL, ownersid, NULL, &len, NULL, &domainlen, &accounttype);
-        if (len > 0 && domainlen > 0) {
-          name = (DIRCHAR*)malloc(len * sizeof(DIRCHAR));
-          domain = (DIRCHAR*)malloc(domainlen * sizeof(DIRCHAR));
-          if (DIRWINFN(LookupAccountSid)(NULL, ownersid, name, &len, domain, &domainlen, &accounttype)) {
-            result = (DIRCHAR*)malloc((domainlen + len + 2) * sizeof(DIRCHAR));
-            memcpy(result, domain, domainlen * sizeof(DIRCHAR));
-            result[domainlen] = '\\';
-            DIRSTRCPY(result + domainlen + 1, name);
-          }
-          free(name);
-          free(domain);
-        }
-        if (!result) {
-#else
-        {
-#endif
-          DIRCHAR* sidstring;
-          if (DIRWINFN(ConvertSidToStringSid)(ownersid, &sidstring)) {
-            result = DIRSTRDUP(sidstring);
-            LocalFree(sidstring);
-          }
-        }
+  DWORD len = PREALLOCATE_SECURITY_DESCRIPTOR;
+  if (!(secdes = (SECURITY_DESCRIPTOR*)malloc(len)))
+    return NULL;
+  if (DIRWINFN(GetFileSecurity)(entry->fullpath, OWNER_SECURITY_INFORMATION, secdes, len, &len) == 0) {
+    if (len <= PREALLOCATE_SECURITY_DESCRIPTOR) {
+      //failure other than insufficient buffer
+      free(secdes);
+      return NULL;
+    } else {
+      if (!(secdes = (SECURITY_DESCRIPTOR*)realloc(secdes, len))) {
+        //memory allocation error
+        return NULL;
+      }
+      if (DIRWINFN(GetFileSecurity)(entry->fullpath, OWNER_SECURITY_INFORMATION, secdes, len, &len) == 0) {
+        //unable to get file security information
+        free(secdes);
+        return NULL;
       }
     }
-    free(secdes);
   }
+  if (GetSecurityDescriptorOwner(secdes, &ownersid, &ownderdefaulted)) {
+    result = sid_to_string(ownersid);
+  }
+  free(secdes);
   /////TO DO: GROUP_SECURITY_INFORMATION
   /////TO DO: query remote server to look up users on network drive - to get volume information about path, see GetVolumeNameForVolumeMountPoint()
 #else
   struct stat fileinfo;
   if (stat(entry->fullpath, &fileinfo) == 0) {
-    struct passwd* pw = getpwuid(fileinfo.st_uid);
-    if (pw) {
-      result = strdup(pw->pw_name);
-    }
-    //struct group* gr = getgrgid(fileinfo.st_gid);
+    result = uid_to_string(fileinfo.st_uid);
   }
 #endif
   return result;

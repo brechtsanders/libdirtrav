@@ -254,10 +254,33 @@ DLL_EXPORT_DIRTRAV const char* dirtrav_prop_get_top_path (dirtrav_entry entry);
  */
 DLL_EXPORT_DIRTRAV const char* dirtrav_prop_get_relative_path (dirtrav_entry entry);
 
+/*! \brief get owner user ID
+ * \param  entry                 system properties of directory entry
+ * \return textual representation of SID on Windows or user id on other systems (the caller must call dirtrav_free()) or NULL on error
+ * \sa     dirtrav_entry
+ * \sa     dirtrav_prop_get_owner()
+ * \sa     dirtrav_prop_get_ownerid()
+ * \sa     dirtrav_traverse_directory()
+ * \sa     dirtrav_free()
+ */
+DLL_EXPORT_DIRTRAV char* dirtrav_prop_get_ownerid (dirtrav_entry entry);
+
+/*! \brief get username from user ID
+ * \param  userid                textual representation of SID on Windows or user id on other systems
+ * \return login name of user
+ * \sa     dirtrav_entry
+ * \sa     dirtrav_prop_get_ownerid()
+ * \sa     dirtrav_prop_get_owner()
+ * \sa     dirtrav_traverse_directory()
+ * \sa     dirtrav_free()
+ */
+DLL_EXPORT_DIRTRAV char* dirtrav_userid_to_name (char* userid);
+
 /*! \brief get owner name
  * \param  entry                 system properties of directory entry
- * \return name of owner (the caller must call dirtrav_free()) or NULL on error
+ * \return login name of owner (the caller must call dirtrav_free()) or NULL on error
  * \sa     dirtrav_entry
+ * \sa     dirtrav_prop_get_ownerid()
  * \sa     dirtrav_traverse_directory()
  * \sa     dirtrav_free()
  */

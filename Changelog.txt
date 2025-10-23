@@ -1,5 +1,9 @@
 0.2.18
 
+2025-10-23  Brecht Sanders  https://github.com/brechtsanders/
+
+  * added dirtrav_prop_get_owner_id() and dirtrav_userid_to_name()
+
 2025-10-22  Brecht Sanders  https://github.com/brechtsanders/
 
   * fix use of obsolete actions/upload-artifact@v1 in GitHub Actions

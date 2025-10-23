@@ -2,8 +2,8 @@
 <CodeBlocks_workspace_file>
 	<Workspace title="libdirtrav">
 		<Project filename="libdirtrav_static.cbp" />
-		<Project filename="libdirtrav_shared.cbp" />
 		<Project filename="libdirtravw_static.cbp" />
+		<Project filename="libdirtrav_shared.cbp" />
 		<Project filename="libdirtravw_shared.cbp" />
 		<Project filename="libdirtrav_nowin_static.cbp" />
 		<Project filename="libdirtrav_nowin_shared.cbp" />
