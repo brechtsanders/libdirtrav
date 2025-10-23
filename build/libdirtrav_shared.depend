@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1761230235 source:\\server\users\brecht\sources\cpp\libdirtrav\src\dirtrav.c
+1761243948 source:\\server\users\brecht\sources\cpp\libdirtrav\src\dirtrav.c
 	"dirtrav_version.h"
 	<string.h>
 	<sys/types.h>
@@ -16,7 +16,7 @@
 	"dirtravw.h"
 	<windows.h>
 
-1761230602 \\server\users\brecht\sources\cpp\libdirtrav\include\dirtrav_version.h
+1761243054 \\server\users\brecht\sources\cpp\libdirtrav\include\dirtrav_version.h
 
 1761229656 \\server\users\brecht\sources\cpp\libdirtrav\include\dirtrav.h
 	<stdlib.h>
