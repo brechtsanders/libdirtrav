@@ -862,7 +862,7 @@ DLL_EXPORT_DIRTRAV void DIRTRAVFN(free) (void* data)
   free(data);
 }
 
-DLL_EXPORT_DIRTRAV DIRCHAR* DIRTRAVFN(get_hostname) (void* data)
+DLL_EXPORT_DIRTRAV DIRCHAR* DIRTRAVFN(get_hostname) ()
 {
 #ifdef _WIN32
   DIRCHAR* result = NULL;
