@@ -719,7 +719,7 @@ DLL_EXPORT_DIRTRAV DIRCHAR* DIRTRAVFN(prop_get_owner_id) (DIRTRAVFN(entry) entry
     buflen = snprintf(NULL, 0, "%llu", (long long)fileinfo.st_uid);
     if ((result = (char*)malloc(buflen + 1)) == NULL)
       return NULL;
-    sprintf(bug, "%llu", (long long)fileinfo.st_uid)
+    sprintf(buf, "%llu", (long long)fileinfo.st_uid);
   }
 #endif
   return result;
