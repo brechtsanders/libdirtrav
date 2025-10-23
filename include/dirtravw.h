@@ -265,7 +265,7 @@ DLL_EXPORT_DIRTRAV const wchar_t* dirtravw_prop_get_relative_path (dirtravw_entr
  * \sa     dirtravw_traverse_directory()
  * \sa     dirtravw_free()
  */
-DLL_EXPORT_DIRTRAV wchar_t* dirtrav_prop_get_ownerid (dirtravw_entry entry);
+DLL_EXPORT_DIRTRAV wchar_t* dirtravw_prop_get_ownerid (dirtravw_entry entry);
 
 /*! \brief get username from user ID
  * \param  userid                textual representation of SID on Windows or user id on other systems
