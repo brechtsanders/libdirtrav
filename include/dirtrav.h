@@ -292,6 +292,12 @@ DLL_EXPORT_DIRTRAV char* dirtrav_prop_get_owner (dirtrav_entry entry);
  */
 DLL_EXPORT_DIRTRAV void dirtrav_free (void* data);
 
+/*! \brief get system hostname
+ * \return hostname or NULL on error
+ * \sa     dirtrav_prop_get_owner()
+ */
+DLL_EXPORT_DIRTRAV char* dirtrav_get_hostname ();
+
 #ifdef __cplusplus
 }
 #endif

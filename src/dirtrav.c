@@ -15,9 +15,16 @@
 #include <windows.h>
 #include <sddl.h>
 #else
+#ifndef __USE_POSIX
+#define __USE_POSIX
+#endif
 #include <sys/types.h>
 #include <pwd.h>
+#include <limits.h>
 #include <unistd.h>
+#ifndef HOST_NAME_MAX
+#define HOST_NAME_MAX _POSIX_HOST_NAME_MAX
+#endif
 #endif
 
 #if defined(DIRTRAV_GENERATE)
@@ -853,6 +860,33 @@ DLL_EXPORT_DIRTRAV DIRCHAR* DIRTRAVFN(prop_get_owner) (DIRTRAVFN(entry) entry)
 DLL_EXPORT_DIRTRAV void DIRTRAVFN(free) (void* data)
 {
   free(data);
+}
+
+DLL_EXPORT_DIRTRAV DIRCHAR* DIRTRAVFN(get_hostname) (void* data)
+{
+#ifdef _WIN32
+  DIRCHAR* result = NULL;
+  DWORD len = 0;
+  GetComputerNameA(NULL, &len);
+  if (len > 0) {
+    if ((result = (DIRCHAR*)malloc(len * sizeof(DIRCHAR))) != NULL) {
+      if (DIRWINFN(GetComputerName)(result, &len) == 0) {
+        free(result);
+        result = NULL;
+      }
+    }
+  }
+  return result;
+#else
+  char* result = NULL;
+  if ((result = (char*)malloc(HOST_NAME_MAX + 1)) != NULL) {
+    if (gethostname(result, HOST_NAME_MAX + 1) != 0) {
+      free(result);
+      result = NULL;
+    }
+  }
+  return result;
+#endif
 }
 
 #undef DIRTRAV_GENERATE
