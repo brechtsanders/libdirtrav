@@ -1,9 +1,15 @@
+0.2.23
+
+2025-11-04  Brecht Sanders  https://github.com/brechtsanders/
+
+  * fix CMakeLists.txt
+
 0.2.22
 
 2025-11-04  Brecht Sanders  https://github.com/brechtsanders/
 
   * additional argument added to dirtrav_userid_to_name()
-  * added dirtravw_prop_get_remote_server() and dirtravw_get_remote_server_from_path()
+  * added dirtrav_prop_get_remote_server() and dirtrav_get_remote_server_from_path()
 
 0.2.21
 
