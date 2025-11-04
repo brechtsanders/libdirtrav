@@ -846,7 +846,9 @@ DLL_EXPORT_DIRTRAV DIRCHAR* DIRTRAVFN(prop_get_owner) (DIRTRAVFN(entry) entry)
     }
   }
   if (GetSecurityDescriptorOwner(secdes, &sid, &ownerdefaulted)) {
-    result = sid_to_username(sid, NULL);
+    if (((struct DIRTRAVFN(entry_internal_struct)*)entry)->topinfo->remotehost == DIRTRAV_REMOTE_HOST_NOT_SET)
+      ((struct DIRTRAVFN(entry_internal_struct)*)entry)->topinfo->remotehost = DIRTRAVFN(get_remote_server_from_path)(((struct DIRTRAVFN(entry_internal_struct)*)entry)->topinfo->fullpath);
+    result = sid_to_username(sid, ((struct DIRTRAVFN(entry_internal_struct)*)entry)->topinfo->remotehost);
   }
   free(secdes);
   /////TO DO: GROUP_SECURITY_INFORMATION
@@ -862,9 +864,8 @@ DLL_EXPORT_DIRTRAV DIRCHAR* DIRTRAVFN(prop_get_owner) (DIRTRAVFN(entry) entry)
 
 DLL_EXPORT_DIRTRAV DIRCHAR* DIRTRAVFN(prop_get_remote_server) (DIRTRAVFN(entry) entry)
 {
-  if (((struct DIRTRAVFN(entry_internal_struct)*)entry)->topinfo->remotehost == DIRTRAV_REMOTE_HOST_NOT_SET) {
+  if (((struct DIRTRAVFN(entry_internal_struct)*)entry)->topinfo->remotehost == DIRTRAV_REMOTE_HOST_NOT_SET)
     ((struct DIRTRAVFN(entry_internal_struct)*)entry)->topinfo->remotehost = DIRTRAVFN(get_remote_server_from_path)(((struct DIRTRAVFN(entry_internal_struct)*)entry)->topinfo->fullpath);
-  }
   return ((struct DIRTRAVFN(entry_internal_struct)*)entry)->topinfo->remotehost;
 }
 
