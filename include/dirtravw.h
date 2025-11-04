@@ -157,7 +157,7 @@ DLL_EXPORT_DIRTRAV int dirtravw_make_full_path (const wchar_t* startpath, const 
 /*! \brief recursively delete \p path and all files and folders it contains
  * \param  path                  path of folder structure to delete
  * \return zero on success, non-zero on error
- * \sa     dirtrav_folder_callback_fn
+ * \sa     dirtravw_folder_callback_fn
  */
 DLL_EXPORT_DIRTRAV int dirtravw_recursive_delete (const wchar_t* path);
 
@@ -258,7 +258,7 @@ DLL_EXPORT_DIRTRAV const wchar_t* dirtravw_prop_get_relative_path (dirtravw_entr
 
 /*! \brief get owner user ID
  * \param  entry                 system properties of directory entry
- * \return textual representation of SID on Windows or user id on other systems (the caller must call dirtrav_free()) or NULL on error
+ * \return textual representation of SID on Windows or user id on other systems (the caller must call dirtravw_free()) or NULL on error
  * \sa     dirtravw_entry
  * \sa     dirtravw_prop_get_owner()
  * \sa     dirtravw_prop_get_ownerid()
@@ -267,26 +267,26 @@ DLL_EXPORT_DIRTRAV const wchar_t* dirtravw_prop_get_relative_path (dirtravw_entr
  */
 DLL_EXPORT_DIRTRAV wchar_t* dirtravw_prop_get_ownerid (dirtravw_entry entry);
 
-/*! \brief get username from user ID
- * \param  userid                textual representation of SID on Windows or user id on other systems
- * \return login name of user
- * \sa     dirtravw_entry
- * \sa     dirtravw_prop_get_owner()
- * \sa     dirtravw_userid_to_name()
- * \sa     dirtravw_traverse_directory()
- * \sa     dirtravw_free()
- */
-DLL_EXPORT_DIRTRAV wchar_t* dirtravw_userid_to_name (wchar_t* userid);
-
 /*! \brief get owner name
  * \param  entry                 system properties of directory entry
- * \return login name of owner (the caller must call dirtravw_free()) or NULL on error
+ * \return login name of owner (the caller must call dirtravw_free()), ID string if unable to find user or NULL on error
  * \sa     dirtravw_entry
  * \sa     dirtravw_prop_get_ownerid()
  * \sa     dirtravw_traverse_directory()
  * \sa     dirtravw_free()
  */
 DLL_EXPORT_DIRTRAV wchar_t* dirtravw_prop_get_owner (dirtravw_entry entry);
+
+/*! \brief determine remote server of top path (on Windows only, always returns NULL on other platforms)
+ * \param  entry                 system properties of directory entry
+ * \return hostname (the caller must call dirtrav_free()) or NULL if not a remote path or on error
+ * \sa     dirtravw_entry
+ * \sa     dirtravw_userid_to_name()
+ * \sa     dirtravw_get_remote_server_from_path()
+ * \sa     dirtravw_traverse_directory()
+ * \sa     dirtravw_free()
+ */
+DLL_EXPORT_DIRTRAV wchar_t* dirtravw_prop_get_remote_server (dirtravw_entry entry);
 
 /*! \brief release memory allocated by this library
  * \param  data                  pointer to memory allocated by other functions in this library
@@ -296,9 +296,30 @@ DLL_EXPORT_DIRTRAV void dirtravw_free (void* data);
 
 /*! \brief get system hostname
  * \return hostname or NULL on error
- * \sa     dirtrav_prop_get_owner()
+ * \sa     dirtravw_prop_get_owner()
  */
 DLL_EXPORT_DIRTRAV wchar_t* dirtravw_get_hostname ();
+
+/*! \brief determine remote server of path (on Windows only, always returns NULL on other platforms)
+ * \param  path                  path to get remote server from
+ * \return hostname (the caller must call dirtravw_free()) or NULL if not a remote path or on error
+ * \sa     dirtravw_prop_get_remote_server()
+ * \sa     dirtravw_free()
+ */
+DLL_EXPORT_DIRTRAV wchar_t* dirtravw_get_remote_server_from_path (const wchar_t* path);
+
+/*! \brief get username from user ID
+ * \param  userid                textual representation of SID on Windows or user id on other systems
+ * \param  server                server to use for lookop or NULL for local system (only needed on Windows)
+ * \return login name of user (the caller must call dirtrav_free()), ID string if unable to find user or NULL on error
+ * \sa     dirtravw_entry
+ * \sa     dirtravw_prop_get_owner()
+ * \sa     dirtravw_userid_to_name()
+ * \sa     dirtravw_prop_get_remote_server()
+ * \sa     dirtravw_traverse_directory()
+ * \sa     dirtravw_free()
+ */
+DLL_EXPORT_DIRTRAV wchar_t* dirtravw_userid_to_name (const wchar_t* userid, const wchar_t* server);
 
 #ifdef __cplusplus
 }

@@ -23,6 +23,7 @@
 # define DIRCHAR wchar_t
 # define DIRPRINTF wprintf
 # define DIRFPRINTF fwprintf
+# define DIRPRINTFSTR "S"
 # define DIRTEXT_(s) L##s
 # define DIRTEXT(s) DIRTEXT_(s)
 # define DIRTRAVFN(fn) dirtravw_##fn
@@ -39,6 +40,7 @@
 # define DIRCHAR char
 # define DIRPRINTF printf
 # define DIRFPRINTF fprintf
+# define DIRPRINTFSTR "s"
 # define DIRTEXT(s) s
 # define DIRTRAVFN(fn) dirtrav_##fn
 # define DIRCMP strcmp
@@ -183,7 +185,7 @@ int main(int argc, char *argv[])
 
   //process all folders
   while (i < argc) {
-    DIRPRINTF(DIRTEXT("Reading directory from: %s\n"), argv[i]);
+    DIRPRINTF(DIRTEXT("Reading directory from: %" DIRPRINTFSTR "\n"), argv[i]);
     //reset counters
     folderdata.level = 0;
     folderdata.count_folders = 0;

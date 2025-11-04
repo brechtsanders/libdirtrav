@@ -97,14 +97,12 @@
 			<Add option="-static" />
 			<Add library="dirtrav" />
 			<Add library="dirtravw" />
+			<Add library="mpr" />
+			<Add library="shlwapi" />
 		</Linker>
 		<Unit filename="../src/test2.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Extensions>
-			<code_completion />
-			<envvars />
-			<debugger />
-		</Extensions>
+		<Extensions />
 	</Project>
 </CodeBlocks_project_file>

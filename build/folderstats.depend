@@ -25,7 +25,7 @@
 	<stdint.h>
 	<sys/stat.h>
 
-1584810264 source:z:\libdirtrav\src\folderstats.c
+1762289402 source:z:\libdirtrav\src\folderstats.c
 	<stdio.h>
 	<stdlib.h>
 	<stdint.h>
@@ -40,13 +40,13 @@
 	<shellapi.h>
 	"dirtrav.h"
 
-1629308544 z:\libdirtrav\include\dirtravw.h
+1762289963 z:\libdirtrav\include\dirtravw.h
 	<stdlib.h>
 	<stdint.h>
 	<sys/stat.h>
 	<wchar.h>
 
-1629308094 z:\libdirtrav\include\dirtrav.h
+1762289963 z:\libdirtrav\include\dirtrav.h
 	<stdlib.h>
 	<stdint.h>
 	<sys/stat.h>

@@ -65,7 +65,7 @@
 				<Option object_output="obj/Debug64/" />
 				<Option type="1" />
 				<Option compiler="MINGW64" />
-				<Option parameters="-e -r C: D:" />
+				<Option parameters="-e -r C:\TEMP" />
 				<Compiler>
 					<Add option="-g" />
 				</Compiler>
@@ -97,6 +97,8 @@
 		<Linker>
 			<Add option="-static" />
 			<Add library="dirtravw" />
+			<Add library="mpr" />
+			<Add library="shlwapi" />
 		</Linker>
 		<Unit filename="../src/folderstats.c">
 			<Option compilerVar="CC" />

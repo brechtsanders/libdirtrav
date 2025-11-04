@@ -52,6 +52,8 @@ libdirtrav_LDFLAGS =
 libdirtrav_SHARED_LDFLAGS =
 ifneq ($(OS),Windows_NT)
 SHARED_CFLAGS += -fPIC
+else
+libdirtrav_LDFLAGS = -lmpr -lshlwapi
 endif
 ifeq ($(OS),Windows_NT)
 libdirtrav_SHARED_LDFLAGS += -Wl,--out-implib,$@$(LIBEXT)

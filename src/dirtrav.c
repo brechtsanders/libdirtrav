@@ -14,6 +14,7 @@
 */
 #include <windows.h>
 #include <sddl.h>
+#include <shlwapi.h>
 #else
 #ifndef __USE_POSIX
 #define __USE_POSIX
@@ -34,7 +35,9 @@
 #  define DIRSTRLEN strlen
 #  define DIRSTRCPY strcpy
 #  define DIRSTRDUP strdup
+#  define DIRSTRCHR strchr
 #  define DIRPRINTF printf
+#  define DIRPRINTF_S "S"
 #  define DIRTEXT(s) s
 //#  define DIRFN(fn) fn
 #  define DIRTRAVFN(fn) dirtrav_##fn
@@ -76,7 +79,9 @@
 #  define DIRSTRLEN wcslen
 #  define DIRSTRCPY wcscpy
 #  define DIRSTRDUP wcsdup
+#  define DIRSTRCHR wcschr
 #  define DIRPRINTF wprintf
+#  define DIRPRINTF_S "s"
 #  define DIRTEXT_(s) L##s
 #  define DIRTEXT(s) DIRTEXT_(s)
 //#  define DIRFN(fn) wide_##fn
@@ -109,6 +114,13 @@
 # define PATH_SEPARATOR '/'
 #endif
 
+#define DIRTRAV_REMOTE_HOST_NOT_SET ((void*)(intptr_t)-1)
+
+struct DIRTRAVFN(top_entry_internal_struct) {
+  const DIRCHAR* fullpath;      //full path of top directory (should always contain trailing path separator)
+  DIRCHAR* remotehost;
+};
+
 struct DIRTRAVFN(entry_internal_struct) {
   struct DIRTRAVFN(entry_struct) external;
 #if defined(_WIN32) && !defined(FORCE_OPENDIR)
@@ -116,7 +128,7 @@ struct DIRTRAVFN(entry_internal_struct) {
 #else
   STAT_STRUCT statbuf;
 #endif
-  const DIRCHAR* toppath;   /////TO DO: consider making this public
+  struct DIRTRAVFN(top_entry_internal_struct)* topinfo;
 };
 
 DLL_EXPORT_DIRTRAV void DIRTRAVFN(get_version) (int* pmajor, int* pminor, int* pmicro)
@@ -207,7 +219,7 @@ int DIRTRAVFN(iteration) (struct DIRTRAVFN(entry_internal_struct)* parentfolderi
   info.external.parentpath = directory;
   info.external.parentinfo = (struct DIRTRAVFN(entry_struct)*)parentfolderinfo;
   info.external.callbackdata = callbackdata;
-  info.toppath = parentfolderinfo->toppath;
+  info.topinfo = parentfolderinfo->topinfo;
 #ifdef FIND_FIRST_EX_LARGE_FETCH
   dir = DIRWINFN(FindFirstFileEx)(searchpath, FindExInfoBasic, &info.direntry, FindExSearchNameMatch, NULL, FIND_FIRST_EX_CASE_SENSITIVE | FIND_FIRST_EX_LARGE_FETCH);
   if (dir == INVALID_HANDLE_VALUE /*&& GetLastError() == ERROR_NOT_SUPPORTED*/)
@@ -272,7 +284,7 @@ int DIRTRAVFN(iteration) (struct DIRTRAVFN(entry_internal_struct)* parentfolderi
   info.external.parentpath = directory;
   info.external.parentinfo = (struct DIRTRAVFN(entry_struct)*)parentfolderinfo;
   info.external.callbackdata = callbackdata;
-  info.toppath = parentfolderinfo->toppath;
+  info.topinfo = parentfolderinfo->topinfo;
   if ((dir = DIR_WFN(opendir)(directory)) != NULL) {
     //process files and directories
     while (status == 0 && (direntry = DIR_WFN(readdir)(dir)) != NULL) {
@@ -328,6 +340,7 @@ int DIRTRAVFN(iteration) (struct DIRTRAVFN(entry_internal_struct)* parentfolderi
 DLL_EXPORT_DIRTRAV int DIRTRAVFN(traverse_directory) (const DIRCHAR* directory, DIRTRAVFN(file_callback_fn) filecallback, DIRTRAVFN(folder_callback_fn) foldercallbackbefore, DIRTRAVFN(folder_callback_fn) foldercallbackafter, void* callbackdata)
 {
   int status;
+  struct DIRTRAVFN(top_entry_internal_struct) topinfo;
   struct DIRTRAVFN(entry_internal_struct) info;
   size_t directorylen = DIRSTRLEN(directory);
   DIRCHAR* fullpath = NULL;
@@ -339,12 +352,18 @@ DLL_EXPORT_DIRTRAV int DIRTRAVFN(traverse_directory) (const DIRCHAR* directory, 
     fullpath[directorylen + 1] = 0;
   }
   memset(&info, 0, sizeof(info));
+  //set directory information
+  topinfo.fullpath = info.external.fullpath;
+  topinfo.remotehost = DIRTRAV_REMOTE_HOST_NOT_SET;
   //info.external.fullname = NULL;/////TO DO
   info.external.fullpath = (fullpath ? fullpath : directory);
   //info.external.parentpath = NULL;
   info.external.callbackdata = callbackdata;
-  info.toppath = info.external.fullpath;
+  info.topinfo = &topinfo;
   status = DIRTRAVFN(iteration)(&info, filecallback, foldercallbackbefore, foldercallbackafter, callbackdata);
+  //clean up
+  if (topinfo.remotehost && topinfo.remotehost != DIRTRAV_REMOTE_HOST_NOT_SET)
+    free(topinfo.remotehost);
   if (fullpath)
     free(fullpath);
   return status;
@@ -378,7 +397,7 @@ int DIRTRAVFN(traverse_fullpath_parts_from_position) (const DIRCHAR* fullpath, s
   info.external.parentinfo = (struct DIRTRAVFN(entry_struct)*)parentfolderinfo;
   info.external.callbackdata = parentfolderinfo->external.callbackdata;
   info.external.folderlocaldata = NULL;
-  info.toppath = parentfolderinfo->toppath;
+  info.topinfo = parentfolderinfo->topinfo;
   //call callback before processing folder
   if (foldercallbackbefore && status == 0) {
     (status = (*foldercallbackbefore)((DIRTRAVFN(entry))&info));
@@ -444,6 +463,7 @@ DLL_EXPORT_DIRTRAV int DIRTRAVFN(traverse_path_parts) (const DIRCHAR* startpath,
   size_t pos;
   int status;
   DIRCHAR* fullpath;
+  struct DIRTRAVFN(top_entry_internal_struct) topinfo;
   struct DIRTRAVFN(entry_internal_struct) info;
   DIRCHAR* startpathfixed;
   if (!path || !*path)
@@ -519,15 +539,19 @@ DLL_EXPORT_DIRTRAV int DIRTRAVFN(traverse_path_parts) (const DIRCHAR* startpath,
     }
   }
   //initialize directory information structure
+  topinfo.fullpath = startpathfixed;
+  topinfo.remotehost = DIRTRAV_REMOTE_HOST_NOT_SET;
   info.external.filename = NULL;
   info.external.fullpath = fullpath;
   info.external.parentpath = NULL;
   info.external.parentinfo = NULL;
   info.external.callbackdata = callbackdata;
   info.external.folderlocaldata = NULL;
-  info.toppath = startpathfixed;
+  info.topinfo = &topinfo;
   status = DIRTRAVFN(traverse_fullpath_parts_from_position)(fullpath, pos, foldercallbackbefore, foldercallbackafter, &info);
   //clean up
+  if (topinfo.remotehost && topinfo.remotehost != DIRTRAV_REMOTE_HOST_NOT_SET)
+    free(topinfo.remotehost);
   free(fullpath);
   free(startpathfixed);
   return status;
@@ -670,13 +694,12 @@ DLL_EXPORT_DIRTRAV time_t DIRTRAVFN(prop_get_access_time) (DIRTRAVFN(entry) entr
 
 DLL_EXPORT_DIRTRAV const DIRCHAR* DIRTRAVFN(prop_get_top_path) (DIRTRAVFN(entry) entry)
 {
-  return ((struct DIRTRAVFN(entry_internal_struct)*)entry)->toppath;
+  return ((struct DIRTRAVFN(entry_internal_struct)*)entry)->topinfo->fullpath;
 }
 
 DLL_EXPORT_DIRTRAV const DIRCHAR* DIRTRAVFN(prop_get_relative_path) (DIRTRAVFN(entry) entry)
 {
-  size_t toppathlen;
-  toppathlen = DIRSTRLEN(((struct DIRTRAVFN(entry_internal_struct)*)entry)->toppath);
+  size_t toppathlen = DIRSTRLEN(((struct DIRTRAVFN(entry_internal_struct)*)entry)->topinfo->fullpath);
   return entry->fullpath + toppathlen;
 }
 
@@ -686,7 +709,7 @@ DLL_EXPORT_DIRTRAV DIRCHAR* DIRTRAVFN(prop_get_ownerid) (DIRTRAVFN(entry) entry)
 #ifdef _WIN32
 #define PREALLOCATE_SECURITY_DESCRIPTOR 48
   SECURITY_DESCRIPTOR* secdes;
-  PSID ownersid;
+  PSID sid;
   BOOL ownderdefaulted;
   DWORD len = PREALLOCATE_SECURITY_DESCRIPTOR;
   if (!(secdes = (SECURITY_DESCRIPTOR*)malloc(len)))
@@ -708,9 +731,9 @@ DLL_EXPORT_DIRTRAV DIRCHAR* DIRTRAVFN(prop_get_ownerid) (DIRTRAVFN(entry) entry)
       }
     }
   }
-  if (GetSecurityDescriptorOwner(secdes, &ownersid, &ownderdefaulted)) {
+  if (GetSecurityDescriptorOwner(secdes, &sid, &ownderdefaulted)) {
     DIRCHAR* sidstring;
-    if (DIRWINFN(ConvertSidToStringSid)(ownersid, &sidstring)) {
+    if (DIRWINFN(ConvertSidToStringSid)(sid, &sidstring)) {
       result = DIRSTRDUP(sidstring);
       LocalFree(sidstring);
     }
@@ -733,7 +756,7 @@ DLL_EXPORT_DIRTRAV DIRCHAR* DIRTRAVFN(prop_get_ownerid) (DIRTRAVFN(entry) entry)
 }
 
 #ifdef _WIN32
-static inline DIRCHAR* sid_to_string (PSID sid)
+static inline DIRCHAR* sid_to_username (PSID sid, const DIRCHAR* server)
 {
   DIRCHAR* result;
   SID_NAME_USE accounttype;
@@ -741,7 +764,7 @@ static inline DIRCHAR* sid_to_string (PSID sid)
   DIRCHAR* domain;
   DWORD len = 0;
   DWORD domainlen = 0;
-  DIRWINFN(LookupAccountSid)(NULL, sid, NULL, &len, NULL, &domainlen, &accounttype);
+  DIRWINFN(LookupAccountSid)(server, sid, NULL, &len, NULL, &domainlen, &accounttype);
   if (len > 0 && domainlen > 0) {
     if (!(name = (DIRCHAR*)malloc(len * sizeof(DIRCHAR)))) {
       return NULL;
@@ -750,7 +773,7 @@ static inline DIRCHAR* sid_to_string (PSID sid)
       free(name);
       return NULL;
     }
-    if (DIRWINFN(LookupAccountSid)(NULL, sid, name, &len, domain, &domainlen, &accounttype)) {
+    if (DIRWINFN(LookupAccountSid)(server, sid, name, &len, domain, &domainlen, &accounttype)) {
       if ((result = (DIRCHAR*)malloc((domainlen + len + 2) * sizeof(DIRCHAR))) == NULL) {
         free(name);
         free(domain);
@@ -767,9 +790,9 @@ static inline DIRCHAR* sid_to_string (PSID sid)
     result = NULL;
 /*
     DWORD errorcode = GetLastError();
-    DIRCHAR* errormessage;
-    if (DIRWINFN(FormatMessage)(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, errorcode, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (DIRCHAR*)&errormessage, 0, NULL) != 0) {
-      DIRPRINTF(DIRTEXT("Error: %s\n"), errormessage);
+    char* errormessage;
+    if (FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, errorcode, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (DIRCHAR*)&errormessage, 0, NULL) != 0) {
+      printf("Error %lu: %s\n", (unsigned long)errorcode, errormessage);
       LocalFree(errormessage);
     }
 */
@@ -794,34 +817,14 @@ static inline DIRCHAR* uid_to_string (uid_t uid)
 }
 #endif
 
-DLL_EXPORT_DIRTRAV DIRCHAR* DIRTRAVFN(userid_to_name) (DIRCHAR* userid)
-{
-#ifdef _WIN32
-  DIRCHAR* result = NULL;
-  PSID sid;
-  if (DIRWINFN(ConvertStringSidToSid)(userid, &sid) == 0)
-    return NULL;
-  result = sid_to_string(sid);
-  LocalFree(sid);
-  return result;
-#else
-  struct passwd* pw;
-  char* p = userid;
-  long long id = strtoll(userid, &p, 10);
-  if (p == userid || id < 0 || id > (1 << sizeof(pid_t)) - 1)
-    return NULL;
-  return uid_to_string(id);
-#endif
-}
-
 DLL_EXPORT_DIRTRAV DIRCHAR* DIRTRAVFN(prop_get_owner) (DIRTRAVFN(entry) entry)
 {
   DIRCHAR* result = NULL;
 #ifdef _WIN32
 #define PREALLOCATE_SECURITY_DESCRIPTOR 48
   SECURITY_DESCRIPTOR* secdes;
-  PSID ownersid;
-  BOOL ownderdefaulted;
+  PSID sid;
+  BOOL ownerdefaulted;
   DWORD len = PREALLOCATE_SECURITY_DESCRIPTOR;
   if (!(secdes = (SECURITY_DESCRIPTOR*)malloc(len)))
     return NULL;
@@ -842,8 +845,8 @@ DLL_EXPORT_DIRTRAV DIRCHAR* DIRTRAVFN(prop_get_owner) (DIRTRAVFN(entry) entry)
       }
     }
   }
-  if (GetSecurityDescriptorOwner(secdes, &ownersid, &ownderdefaulted)) {
-    result = sid_to_string(ownersid);
+  if (GetSecurityDescriptorOwner(secdes, &sid, &ownerdefaulted)) {
+    result = sid_to_username(sid, NULL);
   }
   free(secdes);
   /////TO DO: GROUP_SECURITY_INFORMATION
@@ -855,6 +858,14 @@ DLL_EXPORT_DIRTRAV DIRCHAR* DIRTRAVFN(prop_get_owner) (DIRTRAVFN(entry) entry)
   }
 #endif
   return result;
+}
+
+DLL_EXPORT_DIRTRAV DIRCHAR* DIRTRAVFN(prop_get_remote_server) (DIRTRAVFN(entry) entry)
+{
+  if (((struct DIRTRAVFN(entry_internal_struct)*)entry)->topinfo->remotehost == DIRTRAV_REMOTE_HOST_NOT_SET) {
+    ((struct DIRTRAVFN(entry_internal_struct)*)entry)->topinfo->remotehost = DIRTRAVFN(get_remote_server_from_path)(((struct DIRTRAVFN(entry_internal_struct)*)entry)->topinfo->fullpath);
+  }
+  return ((struct DIRTRAVFN(entry_internal_struct)*)entry)->topinfo->remotehost;
 }
 
 DLL_EXPORT_DIRTRAV void DIRTRAVFN(free) (void* data)
@@ -886,6 +897,77 @@ DLL_EXPORT_DIRTRAV DIRCHAR* DIRTRAVFN(get_hostname) ()
     }
   }
   return result;
+#endif
+}
+
+DLL_EXPORT_DIRTRAV DIRCHAR* DIRTRAVFN(get_remote_server_from_path) (const DIRCHAR* path)
+{
+#ifdef _WIN32
+  DIRCHAR* result = NULL;
+  //canonicalize path
+  DIRCHAR* realpath;
+  size_t len = DIRSTRLEN(path);
+  if (len < MAX_PATH)
+    len = MAX_PATH;
+  if ((realpath = (DIRCHAR*)malloc((len + 1) * sizeof(DIRCHAR))) == NULL)
+    return NULL;
+  if (!DIRWINFN(PathCanonicalize)(realpath, path))
+    DIRSTRCPY(realpath, path);
+  //check if network path
+  if (DIRWINFN(PathIsNetworkPath)(realpath)) {
+    //in case of drive letter check where it is mapped to
+    if (realpath[0] && realpath[1] == ':') {
+      DWORD uncpathlen = 0;
+      DIRCHAR drive[3];
+      drive[0] = realpath[0];
+      drive[1] = ':';
+      drive[2] = 0;
+      DIRWINFN(WNetGetConnection)(drive, NULL, &uncpathlen);
+      if (uncpathlen > 0) {
+        if ((realpath = (DIRCHAR*)realloc(realpath, uncpathlen * sizeof(DIRCHAR))) != NULL) {
+          if (DIRWINFN(WNetGetConnection)(drive, realpath, &uncpathlen) != NO_ERROR) {
+            free(realpath);
+            realpath = NULL;
+          }
+        }
+      }
+    }
+    //get hostname part from UNC path
+    if (realpath && realpath[0] == '\\' && realpath[1] == '\\' && realpath[2] && realpath[2]) {
+      DIRCHAR* p = realpath + 2;
+      DIRCHAR* q = DIRSTRCHR(p, '\\');
+      len = (q ? q - p : DIRSTRLEN(p));
+      if ((result = (DIRCHAR*)malloc((len + 1) * sizeof(DIRCHAR))) != NULL) {
+        memcpy(result, p, len * sizeof(DIRCHAR));
+        result[len] = 0;
+      }
+    }
+  }
+  //clean up
+  free(realpath);
+  return result;
+#else
+  return NULL;
+#endif
+}
+
+DLL_EXPORT_DIRTRAV DIRCHAR* DIRTRAVFN(userid_to_name) (const DIRCHAR* userid, const DIRCHAR* server)
+{
+#ifdef _WIN32
+  DIRCHAR* result = NULL;
+  PSID sid;
+  if (DIRWINFN(ConvertStringSidToSid)(userid, &sid) == 0)
+    return NULL;
+  result = sid_to_username(sid, server);
+  LocalFree(sid);
+  return result;
+#else
+  struct passwd* pw;
+  char* p = userid;
+  long long id = strtoll(userid, &p, 10);
+  if (p == userid || id < 0 || id > (1 << sizeof(pid_t)) - 1)
+    return NULL;
+  return uid_to_string(id);
 #endif
 }
 

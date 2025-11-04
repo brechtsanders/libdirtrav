@@ -1,3 +1,10 @@
+0.2.22
+
+2025-11-04  Brecht Sanders  https://github.com/brechtsanders/
+
+  * additional argument added to dirtrav_userid_to_name()
+  * added dirtravw_prop_get_remote_server() and dirtravw_get_remote_server_from_path()
+
 0.2.21
 
 2025-10-23  Brecht Sanders  https://github.com/brechtsanders/
@@ -6,6 +13,8 @@
 
 0.2.20
 
+
+  * fix missing dirtravw_prop_get_ownerid()
 
 0.2.19
 

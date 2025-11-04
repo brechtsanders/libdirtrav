@@ -91,6 +91,8 @@
 			<Add option="-static" />
 			<Add library="dirtrav" />
 			<Add library="dirtravw" />
+			<Add library="mpr" />
+			<Add library="shlwapi" />
 		</Linker>
 		<Unit filename="../src/test3.c">
 			<Option compilerVar="CC" />

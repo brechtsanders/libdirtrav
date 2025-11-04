@@ -88,15 +88,15 @@
 			<Add option="-DBUILD_DIRTRAV_DLL" />
 			<Add directory="../include" />
 		</Compiler>
+		<Linker>
+			<Add library="mpr" />
+			<Add library="shlwapi" />
+		</Linker>
 		<Unit filename="../include/dirtrav_version.h" />
 		<Unit filename="../include/dirtravw.h" />
 		<Unit filename="../src/dirtrav.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Extensions>
-			<code_completion />
-			<envvars />
-			<debugger />
-		</Extensions>
+		<Extensions />
 	</Project>
 </CodeBlocks_project_file>
