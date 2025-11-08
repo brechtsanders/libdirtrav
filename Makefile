@@ -79,7 +79,7 @@ TOOLS_BIN = tree$(BINEXT) rdir$(BINEXT) folderstats$(BINEXT)
 EXAMPLES_BIN = test1$(BINEXT)
 
 COMMON_PACKAGE_FILES = README.md LICENSE Changelog.txt
-SOURCE_PACKAGE_FILES = $(COMMON_PACKAGE_FILES) Makefile CMakeLists.txt doc/Doxyfile include/*.h src/*.c build/*.workspace build/*.cbp build/*.depend
+SOURCE_PACKAGE_FILES = $(COMMON_PACKAGE_FILES) Makefile CMakeLists.txt *.in doc/Doxyfile include/*.h src/*.c build/*.workspace build/*.cbp build/*.depend
 
 PC_FILEBASE := dirtrav
 PC_DESCRIPTION := Cross-platform C library for recursively traversing directory contents
