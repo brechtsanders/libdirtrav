@@ -1,3 +1,9 @@
+0.2.25
+
+2025-11-08  Brecht Sanders  https://github.com/brechtsanders/
+
+  * fix relative path issues in get_remote_server_from_path()
+
 0.2.24
 
 2025-11-08  Brecht Sanders  https://github.com/brechtsanders/

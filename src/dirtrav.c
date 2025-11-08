@@ -35,6 +35,7 @@
 #  define DIRSTRLEN strlen
 #  define DIRSTRCPY strcpy
 #  define DIRSTRDUP strdup
+#  define DIRSTRNCASECMP _strnicmp
 #  define DIRSTRCHR strchr
 #  define DIRPRINTF printf
 #  define DIRPRINTF_S "S"
@@ -79,6 +80,7 @@
 #  define DIRSTRLEN wcslen
 #  define DIRSTRCPY wcscpy
 #  define DIRSTRDUP wcsdup
+#  define DIRSTRNCASECMP _wcsnicmp
 #  define DIRSTRCHR wcschr
 #  define DIRPRINTF wprintf
 #  define DIRPRINTF_S "s"
@@ -756,7 +758,7 @@ DLL_EXPORT_DIRTRAV DIRCHAR* DIRTRAVFN(prop_get_ownerid) (DIRTRAVFN(entry) entry)
 }
 
 #ifdef _WIN32
-static inline DIRCHAR* sid_to_username (PSID sid, const DIRCHAR* server)
+static DIRCHAR* sid_to_username (PSID sid, const DIRCHAR* server)
 {
   DIRCHAR* result;
   SID_NAME_USE accounttype;
@@ -907,13 +909,16 @@ DLL_EXPORT_DIRTRAV DIRCHAR* DIRTRAVFN(get_remote_server_from_path) (const DIRCHA
   DIRCHAR* result = NULL;
   //canonicalize path
   DIRCHAR* realpath;
-  size_t len = DIRSTRLEN(path);
-  if (len < MAX_PATH)
-    len = MAX_PATH;
-  if ((realpath = (DIRCHAR*)malloc((len + 1) * sizeof(DIRCHAR))) == NULL)
-    return NULL;
-  if (!DIRWINFN(PathCanonicalize)(realpath, path))
-    DIRSTRCPY(realpath, path);
+  size_t len;
+  //determine full path
+  if ((len = DIRWINFN(GetFullPathName)(path, 0, NULL, NULL)) > 0) {
+    if ((realpath = (DIRCHAR*)malloc((len) * sizeof(DIRCHAR))) == NULL)
+      return NULL;
+    if (DIRWINFN(GetFullPathName)(path, len, realpath, NULL) == 0) {
+      free(realpath);
+      return NULL;
+    }
+  }
   //check if network path
   if (DIRWINFN(PathIsNetworkPath)(realpath)) {
     //in case of drive letter check where it is mapped to
@@ -934,13 +939,25 @@ DLL_EXPORT_DIRTRAV DIRCHAR* DIRTRAVFN(get_remote_server_from_path) (const DIRCHA
       }
     }
     //get hostname part from UNC path
-    if (realpath && realpath[0] == '\\' && realpath[1] == '\\' && realpath[2] && realpath[2]) {
-      DIRCHAR* p = realpath + 2;
-      DIRCHAR* q = DIRSTRCHR(p, '\\');
-      len = (q ? q - p : DIRSTRLEN(p));
-      if ((result = (DIRCHAR*)malloc((len + 1) * sizeof(DIRCHAR))) != NULL) {
-        memcpy(result, p, len * sizeof(DIRCHAR));
-        result[len] = 0;
+    if (realpath && realpath[0] == '\\' && realpath[1] == '\\' && realpath[2]) {
+      if (realpath[2] == '?') {
+        if (DIRSTRNCASECMP(realpath + 3, DIRTEXT("\\UNC\\"), 5) == 0) {
+          DIRCHAR* p = realpath + 8;
+          DIRCHAR* q = DIRSTRCHR(p, '\\');
+          len = (q ? q - p : DIRSTRLEN(p));
+          if ((result = (DIRCHAR*)malloc((len + 1) * sizeof(DIRCHAR))) != NULL) {
+            memcpy(result, p, len * sizeof(DIRCHAR));
+            result[len] = 0;
+          }
+        }
+      } else {
+        DIRCHAR* p = realpath + 2;
+        DIRCHAR* q = DIRSTRCHR(p, '\\');
+        len = (q ? q - p : DIRSTRLEN(p));
+        if ((result = (DIRCHAR*)malloc((len + 1) * sizeof(DIRCHAR))) != NULL) {
+          memcpy(result, p, len * sizeof(DIRCHAR));
+          result[len] = 0;
+        }
       }
     }
   }
