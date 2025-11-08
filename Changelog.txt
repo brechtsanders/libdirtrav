@@ -1,5 +1,7 @@
 0.2.24
 
+  * generate pkg-config .pc file in Makefile and CMakeLists.txt
+
 0.2.23
 
 2025-11-04  Brecht Sanders  https://github.com/brechtsanders/

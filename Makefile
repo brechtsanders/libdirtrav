@@ -81,6 +81,13 @@ EXAMPLES_BIN = test1$(BINEXT)
 COMMON_PACKAGE_FILES = README.md LICENSE Changelog.txt
 SOURCE_PACKAGE_FILES = $(COMMON_PACKAGE_FILES) Makefile CMakeLists.txt doc/Doxyfile include/*.h src/*.c build/*.workspace build/*.cbp build/*.depend
 
+PC_FILEBASE := dirtrav
+PC_DESCRIPTION := Cross-platform C library for recursively traversing directory contents
+ifneq ($(BUILD_WIDE),)
+	PC_FILEBASE := $(PC_FILEBASE)w
+	PC_DESCRIPTION := $(PC_DESCRIPTION) - Windows wide character version
+endif
+
 default: all
 
 all: static-lib shared-lib $(TOOLS_BIN)
@@ -122,6 +129,10 @@ static-lib: $(LIBPREFIX)dirtrav$(LIBEXT) $(STATIC_LIB_WIDE)
 
 shared-lib: $(LIBPREFIX)dirtrav$(SOEXT) $(SHARED_LIB_WIDE)
 
+pkg-config: lib$(PC_FILEBASE).pc
+lib$(PC_FILEBASE).pc: version
+	sed -e "s?@PC_PROJECT_DESCRIPTION@?$(PC_DESCRIPTION)?; s?@PC_PROJECT_NAME@?$(@:.pc=)?; s?@CMAKE_INSTALL_PREFIX@?$(PREFIX)?; s?@PARSED_VERSION@?$(shell cat version)?; s?@PC_LINK_LIBRARY@?$(PC_FILEBASE)?; s?@PC_STATIC_DEPENDENCIES@?$(libdirtrav_LDFLAGS)?" pkgconfig.pc.in > $@
+
 #tree.o: src/tree.c
 #	$(CC) -c -o $@ $< $(CFLAGS) 
 
@@ -151,10 +162,11 @@ ifdef DOXYGEN
 	$(DOXYGEN) doc/Doxyfile
 endif
 
-install: all doc
-	$(MKDIR) $(PREFIX)/include $(PREFIX)/lib $(PREFIX)/bin
+install: all pkg-config doc
+	$(MKDIR) $(PREFIX)/include $(PREFIX)/lib/pkgconfig $(PREFIX)/bin
 	$(CP) include/*.h $(PREFIX)/include/
 	$(CP) *$(LIBEXT) $(PREFIX)/lib/
+	$(CP) lib$(PC_FILEBASE).pc $(PREFIX)/lib/pkgconfig/
 ifeq ($(OS),Windows_NT)
 	$(CP) *$(SOEXT) $(PREFIX)/bin/
 else
@@ -193,7 +205,7 @@ endif
 
 .PHONY: clean
 clean:
-	$(RM) src/*.o *$(LIBEXT) *$(SOEXT) $(TOOLS_BIN) $(EXAMPLES_BIN) version libdirtrav-*.tar.xz doc/doxygen_sqlite3.db
+	$(RM) src/*.o *$(LIBEXT) *$(SOEXT) *.pc $(TOOLS_BIN) $(EXAMPLES_BIN) version libdirtrav-*.tar.xz doc/doxygen_sqlite3.db
 ifeq ($(OS),Windows_NT)
 	$(RM) *.def
 endif
