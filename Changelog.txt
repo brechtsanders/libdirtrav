@@ -1,5 +1,9 @@
 0.2.28
 
+2026-02-22  Brecht Sanders  https://github.com/brechtsanders/
+
+  * minor fixes
+
 0.2.27
 
 2026-02-22  Brecht Sanders  https://github.com/brechtsanders/
