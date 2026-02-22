@@ -197,7 +197,7 @@ int DIRTRAVFN(iteration) (struct DIRTRAVFN(entry_internal_struct)* parentfolderi
   struct DIRTRAVFN(entry_internal_struct) info;
   size_t filenamelen;
   const DIRCHAR* directory = parentfolderinfo->external.fullpath;
-  size_t directorylen = DIRSTRLEN(directory);
+  size_t directorylen = (directory ? DIRSTRLEN(directory) : 0);
 #if defined(_WIN32) && !defined(FORCE_OPENDIR)
   size_t fullpathlen;
   HANDLE dir;
@@ -344,7 +344,10 @@ DLL_EXPORT_DIRTRAV int DIRTRAVFN(traverse_directory) (const DIRCHAR* directory, 
   int status;
   struct DIRTRAVFN(top_entry_internal_struct) topinfo;
   struct DIRTRAVFN(entry_internal_struct) info;
-  size_t directorylen = DIRSTRLEN(directory);
+  size_t directorylen;
+  if (!directory || !*directory)
+    directory = ".";
+  directorylen = DIRSTRLEN(directory);
   DIRCHAR* fullpath = NULL;
   if (directorylen > 0 && directory[directorylen - 1] != PATH_SEPARATOR) {
     //add trailing separator if missing
@@ -479,16 +482,22 @@ DLL_EXPORT_DIRTRAV int DIRTRAVFN(traverse_path_parts) (const DIRCHAR* startpath,
     //add trailing to start path separator if missing
     size_t startpathlen = DIRSTRLEN(startpath);
     if (startpathlen > 0 && startpath[startpathlen - 1] != PATH_SEPARATOR) {
-      startpathfixed = (DIRCHAR*)malloc((startpathlen + 2) * sizeof(DIRCHAR));
-      memcpy(startpathfixed, startpath, startpathlen * sizeof(DIRCHAR));
-      startpathfixed[startpathlen] = PATH_SEPARATOR;
-      startpathfixed[startpathlen + 1] = 0;
+      if ((startpathfixed = (DIRCHAR*)malloc((startpathlen + 2) * sizeof(DIRCHAR))) != NULL) {
+        memcpy(startpathfixed, startpath, startpathlen * sizeof(DIRCHAR));
+        startpathfixed[startpathlen] = PATH_SEPARATOR;
+        startpathfixed[startpathlen + 1] = 0;
+      }
     } else {
       startpathfixed = DIRSTRDUP(startpath);
     }
+    if (!startpathfixed)
+      return -1;
     //determine full path
     pos = DIRSTRLEN(startpathfixed);
-    fullpath = (DIRCHAR*)malloc((pos + DIRSTRLEN(path) + 2) * sizeof(DIRCHAR));
+    if ((fullpath = (DIRCHAR*)malloc((pos + DIRSTRLEN(path) + 2) * sizeof(DIRCHAR))) == NULL) {
+      free(startpathfixed);
+      return -1;
+    }
     DIRSTRCPY(fullpath, startpathfixed);
     if (pos > 0 && fullpath[pos] != PATH_SEPARATOR && path[0] != PATH_SEPARATOR)
       fullpath[pos++] = PATH_SEPARATOR;

@@ -1,3 +1,9 @@
+0.2.26
+
+2026-02-22  Brecht Sanders  https://github.com/brechtsanders/
+
+  * avoid calling strlen() on NULL values
+
 0.2.25
 
 2025-11-08  Brecht Sanders  https://github.com/brechtsanders/
