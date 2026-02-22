@@ -710,7 +710,7 @@ DLL_EXPORT_DIRTRAV const DIRCHAR* DIRTRAVFN(prop_get_top_path) (DIRTRAVFN(entry)
 
 DLL_EXPORT_DIRTRAV const DIRCHAR* DIRTRAVFN(prop_get_relative_path) (DIRTRAVFN(entry) entry)
 {
-  size_t toppathlen = DIRSTRLEN(((struct DIRTRAVFN(entry_internal_struct)*)entry)->topinfo->fullpath);
+  size_t toppathlen = (((struct DIRTRAVFN(entry_internal_struct)*)entry)->topinfo->fullpath ? DIRSTRLEN(((struct DIRTRAVFN(entry_internal_struct)*)entry)->topinfo->fullpath) : 0);
   return entry->fullpath + toppathlen;
 }
 
@@ -990,7 +990,7 @@ DLL_EXPORT_DIRTRAV DIRCHAR* DIRTRAVFN(userid_to_name) (const DIRCHAR* userid, co
   return result;
 #else
   struct passwd* pw;
-  char* p = userid;
+  char* p = (char*)userid;
   long long id = strtoll(userid, &p, 10);
   if (p == userid || id < 0 || id > (1 << sizeof(pid_t)) - 1)
     return NULL;

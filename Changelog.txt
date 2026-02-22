@@ -1,3 +1,9 @@
+0.2.27
+
+2026-02-22  Brecht Sanders  https://github.com/brechtsanders/
+
+  * avoid calling strlen() on NULL value in dirtrav_prop_get_relative_path
+
 0.2.26
 
 2026-02-22  Brecht Sanders  https://github.com/brechtsanders/
