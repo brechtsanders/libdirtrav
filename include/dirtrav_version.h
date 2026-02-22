@@ -1,5 +1,5 @@
 /*****************************************************************************
-Copyright (C)  2013-2018  Brecht Sanders  All Rights Reserved
+Copyright (C)  2013-2026  Brecht Sanders  All Rights Reserved
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -47,7 +47,7 @@ THE SOFTWARE.
 /*! \brief minor version number */
 #define DIRTRAV_VERSION_MINOR 2
 /*! \brief micro version number */
-#define DIRTRAV_VERSION_MICRO 27
+#define DIRTRAV_VERSION_MICRO 28
 /*! @} */
 
 /*! \cond PRIVATE */

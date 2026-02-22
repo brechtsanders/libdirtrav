@@ -358,12 +358,12 @@ DLL_EXPORT_DIRTRAV int DIRTRAVFN(traverse_directory) (const DIRCHAR* directory, 
   }
   memset(&info, 0, sizeof(info));
   //set directory information
-  topinfo.fullpath = info.external.fullpath;
-  topinfo.remotehost = DIRTRAV_REMOTE_HOST_NOT_SET;
   //info.external.fullname = NULL;/////TO DO
   info.external.fullpath = (fullpath ? fullpath : directory);
   //info.external.parentpath = NULL;
   info.external.callbackdata = callbackdata;
+  topinfo.fullpath = info.external.fullpath;
+  topinfo.remotehost = DIRTRAV_REMOTE_HOST_NOT_SET;
   info.topinfo = &topinfo;
   status = DIRTRAVFN(iteration)(&info, filecallback, foldercallbackbefore, foldercallbackafter, callbackdata);
   //clean up
@@ -769,7 +769,7 @@ DLL_EXPORT_DIRTRAV DIRCHAR* DIRTRAVFN(prop_get_ownerid) (DIRTRAVFN(entry) entry)
 #ifdef _WIN32
 static DIRCHAR* sid_to_username (PSID sid, const DIRCHAR* server)
 {
-  DIRCHAR* result;
+  DIRCHAR* result = NULL;
   SID_NAME_USE accounttype;
   DIRCHAR* name;
   DIRCHAR* domain;
@@ -917,7 +917,7 @@ DLL_EXPORT_DIRTRAV DIRCHAR* DIRTRAVFN(get_remote_server_from_path) (const DIRCHA
 #ifdef _WIN32
   DIRCHAR* result = NULL;
   //canonicalize path
-  DIRCHAR* realpath;
+  DIRCHAR* realpath = NULL;
   size_t len;
   //determine full path
   if ((len = DIRWINFN(GetFullPathName)(path, 0, NULL, NULL)) > 0) {

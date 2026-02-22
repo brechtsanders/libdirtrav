@@ -1,1 +1,32 @@
 # depslib dependency file v1.0
+1771760973 source:z:\libdirtrav\src\dirtrav.c
+	"dirtrav_version.h"
+	<string.h>
+	<sys/types.h>
+	<dirent.h>
+	<sys/stat.h>
+	<stdio.h>
+	<windows.h>
+	<sddl.h>
+	<shlwapi.h>
+	<sys/types.h>
+	<pwd.h>
+	<limits.h>
+	<unistd.h>
+	"dirtrav.h"
+	"dirtravw.h"
+	<windows.h>
+
+1771761068 z:\libdirtrav\include\dirtrav_version.h
+
+1762290184 z:\libdirtrav\include\dirtrav.h
+	<stdlib.h>
+	<stdint.h>
+	<sys/stat.h>
+
+1762290184 z:\libdirtrav\include\dirtravw.h
+	<stdlib.h>
+	<stdint.h>
+	<sys/stat.h>
+	<wchar.h>
+
