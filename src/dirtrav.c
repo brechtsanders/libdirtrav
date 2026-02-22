@@ -346,7 +346,7 @@ DLL_EXPORT_DIRTRAV int DIRTRAVFN(traverse_directory) (const DIRCHAR* directory, 
   struct DIRTRAVFN(entry_internal_struct) info;
   size_t directorylen;
   if (!directory || !*directory)
-    directory = ".";
+    directory = DIRTEXT(".");
   directorylen = DIRSTRLEN(directory);
   DIRCHAR* fullpath = NULL;
   if (directorylen > 0 && directory[directorylen - 1] != PATH_SEPARATOR) {
